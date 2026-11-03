@@ -1,1 +1,76 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY OCTAPAD</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#10121b;color:white;
+ font-family:Arial;text-align:center;padding:15px;
+}
+h1{color:#00e5ff}
+.pads{
+ display:grid;grid-template-columns:repeat(2,1fr);
+ gap:14px;max-width:500px;margin:25px auto;
+}
+.pad{
+ height:125px;border:2px solid #00e5ff;
+ border-radius:18px;background:#222b40;
+ color:white;font-size:25px;font-weight:bold;
+ box-shadow:0 5px 15px #0008;
+ touch-action:manipulation;
+}
+.pad:active{background:#00bcd4;transform:scale(.96)}
+.controls{margin:20px auto;max-width:500px}
+input{width:90%;accent-color:#00e5ff}
+button{cursor:pointer}
+</style>
+</head>
+<body>
+<h1>🥁 MY OCTAPAD</h1>
+<p>Mobile Drum Pad</p>
+
+<div class="pads">
+<button class="pad" onclick="play(0)">PAD 1</button>
+<button class="pad" onclick="play(1)">PAD 2</button>
+<button class="pad" onclick="play(2)">PAD 3</button>
+<button class="pad" onclick="play(3)">PAD 4</button>
+<button class="pad" onclick="play(4)">PAD 5</button>
+<button class="pad" onclick="play(5)">PAD 6</button>
+<button class="pad" onclick="play(6)">PAD 7</button>
+<button class="pad" onclick="play(7)">PAD 8</button>
+</div>
+
+<div class="controls">
+<h3>🔊 Volume Control</h3>
+<input type="range" min="0" max="100" value="70"
+oninput="volume=this.value/100">
+</div>
+
+<script>
+let audio = new (window.AudioContext || window.webkitAudioContext)();
+let volume=0.7;
+
+function play(n){
+ if(audio.state==="suspended") audio.resume();
+ let osc=audio.createOscillator();
+ let gain=audio.createGain();
+ let now=audio.currentTime;
+ let freq=[100,150,180,220,250,300,350,400][n];
+ osc.type="sine";
+ osc.frequency.setValueAtTime(freq,now);
+ osc.frequency.exponentialRampToValueAtTime(35,now+0.18);
+ gain.gain.setValueAtTime(volume,now);
+ gain.gain.exponentialRampToValueAtTime(0.001,now+0.2);
+ osc.connect(gain);
+ gain.connect(audio.destination);
+ osc.start(now);
+ osc.stop(now+0.2);
+}
+</script>
+</body>
+</html>
+
