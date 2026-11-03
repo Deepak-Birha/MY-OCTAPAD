@@ -1,0 +1,13 @@
+{
+  "name": "MY OCTAPAD",
+  "short_name": "OCTAPAD",
+  "description": "Mobile Drum Pad",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10121b",
+  "theme_color": "#10121b",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
