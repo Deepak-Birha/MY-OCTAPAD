@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#10121b">
-<meta name="description" content="MY OCTAPAD - Mobile Drum Pad">
+<meta name="description" content="MY OCTAPAD - Mobile Drum Pad with USB MIDI Keyboard Support">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,74 +13,130 @@
 <title>MY OCTAPAD</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#10121b;color:white;
- font-family:Arial;text-align:center;padding:15px;
-}
-h1{color:#00e5ff}
-.pads{
- display:grid;grid-template-columns:repeat(2,1fr);
- gap:14px;max-width:500px;margin:25px auto;
-}
-.pad{
- height:125px;border:2px solid #00e5ff;
- border-radius:18px;background:#222b40;
- color:white;font-size:25px;font-weight:bold;
- box-shadow:0 5px 15px #0008;
- touch-action:manipulation;
-}
-.pad:active{background:#00bcd4;transform:scale(.96)}
-.controls{margin:20px auto;max-width:500px}
-input{width:90%;accent-color:#00e5ff}
+body{margin:0;background:#10121b;color:white;font-family:Arial,sans-serif;text-align:center;padding:15px}
+h1{color:#00e5ff;margin:10px 0}
+.pads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:500px;margin:22px auto}
+.pad{min-height:112px;border:2px solid #00e5ff;border-radius:18px;background:#222b40;color:white;font-size:22px;font-weight:bold;box-shadow:0 5px 15px #0008;touch-action:manipulation}
+.pad:active,.pad.hit{background:#00bcd4;color:#071018;transform:scale(.97)}
+.controls{margin:18px auto;max-width:500px}
+input[type=range]{width:90%;accent-color:#00e5ff}
 button{cursor:pointer}
+.midi-connect{background:#00c6d7;color:#071018;border:0;border-radius:12px;padding:13px 20px;font-size:16px;font-weight:bold}
+#midiStatus{font-size:14px;color:#c7d2e2;min-height:22px;margin:12px}
+.hint{font-size:12px;color:#9eacc3;max-width:500px;margin:10px auto;line-height:1.5}
 </style>
 </head>
 <body>
 <h1>🥁 MY OCTAPAD</h1>
-<p>Mobile Drum Pad</p>
+<p>8 Drum Pads · USB MIDI Keyboard</p>
 
 <div class="pads">
-<button class="pad" onclick="play(0)">PAD 1</button>
-<button class="pad" onclick="play(1)">PAD 2</button>
-<button class="pad" onclick="play(2)">PAD 3</button>
-<button class="pad" onclick="play(3)">PAD 4</button>
-<button class="pad" onclick="play(4)">PAD 5</button>
-<button class="pad" onclick="play(5)">PAD 6</button>
-<button class="pad" onclick="play(6)">PAD 7</button>
-<button class="pad" onclick="play(7)">PAD 8</button>
+<button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
+<button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
+<button class="pad" data-pad="2" onclick="play(2)">PAD 3<br><small>RIM / SNARE</small></button>
+<button class="pad" data-pad="3" onclick="play(3)">PAD 4<br><small>LOW TOM</small></button>
+<button class="pad" data-pad="4" onclick="play(4)">PAD 5<br><small>FLOOR TOM</small></button>
+<button class="pad" data-pad="5" onclick="play(5)">PAD 6<br><small>HI TOM</small></button>
+<button class="pad" data-pad="6" onclick="play(6)">PAD 7<br><small>HIGH TOM</small></button>
+<button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
+</div>
+
+<div class="controls">
+<h3>🎹 USB MIDI Keyboard</h3>
+<button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
+<p id="midiStatus">MIDI keyboard not connected</p>
+<p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
 </div>
 
 <div class="controls">
 <h3>🔊 Volume Control</h3>
-<input type="range" min="0" max="100" value="70"
-oninput="volume=this.value/100">
+<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
 </div>
 
 <script>
 let audio = new (window.AudioContext || window.webkitAudioContext)();
-let volume=0.7;
+let volume = 0.7;
+let midiAccess = null;
 
-function play(n){
- if(audio.state==="suspended") audio.resume();
- let osc=audio.createOscillator();
- let gain=audio.createGain();
- let now=audio.currentTime;
- let freq=[100,150,180,220,250,300,350,400][n];
- osc.type="sine";
- osc.frequency.setValueAtTime(freq,now);
- osc.frequency.exponentialRampToValueAtTime(35,now+0.18);
- gain.gain.setValueAtTime(volume,now);
- gain.gain.exponentialRampToValueAtTime(0.001,now+0.2);
- osc.connect(gain);
- gain.connect(audio.destination);
- osc.start(now);
- osc.stop(now+0.2);
+// MIDI note mapping: 36, 38, 40, 41, 43, 45, 47, 48 -> Pads 1-8
+const noteToPad = {36:0, 38:1, 40:2, 41:3, 43:4, 45:5, 47:6, 48:7};
+
+function play(n, velocity=100) {
+  if (audio.state === "suspended") audio.resume();
+  const now = audio.currentTime;
+  const level = volume * Math.max(0.15, velocity / 127);
+  const gain = audio.createGain();
+  gain.connect(audio.destination);
+  const osc = audio.createOscillator();
+
+  // Simple synthesized drum voices; each pad has a distinct character.
+  const frequencies = [115, 185, 240, 150, 125, 190, 260, 720];
+  const durations = [0.22, 0.16, 0.12, 0.28, 0.32, 0.24, 0.2, 0.38];
+  osc.type = n === 7 ? "triangle" : (n === 1 || n === 2 ? "triangle" : "sine");
+  osc.frequency.setValueAtTime(frequencies[n], now);
+  osc.frequency.exponentialRampToValueAtTime(n === 7 ? 180 : 38, now + durations[n]);
+  gain.gain.setValueAtTime(level, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + durations[n]);
+  osc.connect(gain);
+  osc.start(now);
+  osc.stop(now + durations[n]);
+
+  const padButton = document.querySelector('[data-pad="' + n + '"]');
+  if (padButton) {
+    padButton.classList.add("hit");
+    setTimeout(() => padButton.classList.remove("hit"), 100);
+  }
+}
+
+async function connectMIDI() {
+  const status = document.getElementById("midiStatus");
+  const button = document.getElementById("midiButton");
+  if (!navigator.requestMIDIAccess) {
+    status.textContent = "इस browser में Web MIDI support नहीं है। Latest Chrome Android इस्तेमाल करें।";
+    return;
+  }
+  button.disabled = true;
+  status.textContent = "MIDI keyboard खोज रहे हैं...";
+  try {
+    midiAccess = await navigator.requestMIDIAccess();
+    midiAccess.inputs.forEach(input => input.onmidimessage = handleMIDIMessage);
+    midiAccess.onstatechange = () => {
+      midiAccess.inputs.forEach(input => input.onmidimessage = handleMIDIMessage);
+      showMIDIDevices();
+    };
+    showMIDIDevices();
+  } catch (error) {
+    status.textContent = "MIDI permission नहीं मिली। Browser में Allow करें और दोबारा कोशिश करें।";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function showMIDIDevices() {
+  const inputs = Array.from(midiAccess.inputs.values());
+  const status = document.getElementById("midiStatus");
+  if (inputs.length) {
+    status.textContent = "Connected: " + inputs.map(device => device.name || "MIDI Keyboard").join(", ");
+  } else {
+    status.textContent = "MIDI access मिल गया, लेकिन keyboard नहीं मिला। USB OTG और cable जाँचें।";
+  }
+}
+
+function handleMIDIMessage(event) {
+  const [command, note, velocity] = event.data;
+  const messageType = command & 0xf0;
+  if ((messageType === 0x90 && velocity > 0) || messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
+    const pad = noteToPad[note];
+    if (pad !== undefined && messageType === 0x90 && velocity > 0) {
+      play(pad, velocity);
+    }
+  }
 }
 
 if ("serviceWorker" in navigator) {
- window.addEventListener("load", () => {
-  navigator.serviceWorker.register("./sw.js").catch(err => console.log("Service worker:", err));
- });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.log("Service worker:", err));
+  });
 }
 </script>
 </body>
