@@ -1,9 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10121b">
+<meta name="description" content="MY OCTAPAD - Mobile Drum Pad">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MY OCTAPAD">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MY OCTAPAD</title>
 <style>
 *{box-sizing:border-box}
@@ -69,6 +75,12 @@ function play(n){
  gain.connect(audio.destination);
  osc.start(now);
  osc.stop(now+0.2);
+}
+
+if ("serviceWorker" in navigator) {
+ window.addEventListener("load", () => {
+  navigator.serviceWorker.register("./sw.js").catch(err => console.log("Service worker:", err));
+ });
 }
 </script>
 </body>
