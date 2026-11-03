@@ -90,6 +90,11 @@ function play(n, velocity=100) {
 
 async function connectMIDI() {
   const status = document.getElementById("midiStatus");
+  if (window.AndroidMIDI && typeof window.AndroidMIDI.connect === "function") {
+    status.textContent = "Android USB MIDI keyboard खोज रहे हैं...";
+    window.AndroidMIDI.connect();
+    return;
+  }
   const button = document.getElementById("midiButton");
   if (!navigator.requestMIDIAccess) {
     status.textContent = "इस browser में Web MIDI support नहीं है। Latest Chrome Android इस्तेमाल करें।";
@@ -111,6 +116,14 @@ async function connectMIDI() {
     button.disabled = false;
   }
 }
+
+window.onNativeMIDIEvent = function(note, velocity) {
+  const pad = noteToPad[note];
+  if (pad !== undefined && velocity > 0) play(pad, velocity);
+};
+window.onNativeMIDIStatus = function(message) {
+  document.getElementById("midiStatus").textContent = message;
+};
 
 function showMIDIDevices() {
   const inputs = Array.from(midiAccess.inputs.values());
