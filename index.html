@@ -180,7 +180,7 @@ function updateSampleRows() {
   padNames.forEach((name, pad) => {
     const row = document.createElement("div"); row.className = "sample-row";
     const label = document.createElement("span");
-    label.textContent = "Pad " + (pad+1) + " – " + name + (sampleNames[pad] ? " ✓ " + sampleNames[pad] : " – Default Sound");
+    label.textContent = (pad+1) + "-" + (sampleNames[pad] ? sampleNames[pad] : "Default Sound");
     const input = document.createElement("input"); input.type = "file"; input.accept = ".wav,audio/wav"; input.hidden = true;
     input.onchange = () => chooseWav(pad, input.files[0]);
     const button = document.createElement("button"); button.textContent = "CHOOSE WAV"; button.onclick = () => input.click();
