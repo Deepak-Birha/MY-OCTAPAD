@@ -3,6 +3,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.media.midi.*;
 import android.webkit.*;
@@ -16,6 +17,7 @@ public class MainActivity extends Activity {
 
  @Override public void onCreate(Bundle b) {
   super.onCreate(b);
+  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
   web=new WebView(this);
   WebSettings settings=web.getSettings();
   settings.setJavaScriptEnabled(true);
