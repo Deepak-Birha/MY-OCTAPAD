@@ -39,7 +39,16 @@ button{cursor:pointer}
 <section class="sample-controls">
 <h2 style="margin:0 0 10px;font-size:22px;color:#00e0ee">🎵 LOAD WAV FILES – CHOOSE WAV</h2><h3>Pad 1 से 8 के लिए WAV Samples</h3>
 <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
-<div id="sampleRows"></div>
+<div id="sampleRows">
+<div class="sample-row"><span>Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 4 – LOW TOM</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files[0])"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 5 – FLOOR TOM</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files[0])"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 6 – HI TOM</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files[0])"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
+</div>
 <div class="kit-actions">
 <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
 <button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
