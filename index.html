@@ -39,11 +39,7 @@ button{cursor:pointer}
 <body>
 <h1>🥁 MY OCTAPAD</h1>
 <p>8 Drum Pads · USB MIDI Keyboard</p>
-<div class="page-nav">
-<button id="previousPage" onclick="changePage(-1)">◀ PREVIOUS</button>
-<span id="pageNumber">PAGE 1 / 200</span>
-<button id="nextPage" onclick="changePage(1)">NEXT ▶</button>
-</div>
+
 
 <section class="sample-controls">
 <h2 style="margin:0 0 10px;font-size:22px;color:#00e0ee">🎵 LOAD WAV FILES – CHOOSE WAV</h2><h3>Pad 1 से 8 के लिए WAV Samples</h3>
@@ -219,10 +215,7 @@ async function changePage(direction) {
   const nextPage = currentPage + direction;
   if (nextPage < 1 || nextPage > totalPages) return;
   currentPage = nextPage;
-  document.getElementById("pageNumber").textContent = "PAGE " + currentPage + " / " + totalPages;
   document.getElementById("pageNumberPads").textContent = "PAGE " + currentPage + " / " + totalPages;
-  document.getElementById("previousPage").disabled = currentPage === 1;
-  document.getElementById("nextPage").disabled = currentPage === totalPages;
   document.getElementById("previousPagePads").disabled = currentPage === 1;
   document.getElementById("nextPagePads").disabled = currentPage === totalPages;
   sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
@@ -305,7 +298,6 @@ function handleMIDIMessage(event) {
 }
 
 updateSampleRows();
-document.getElementById("previousPage").disabled = true;
 document.getElementById("previousPagePads").disabled = true;
 
 if ("serviceWorker" in navigator) {
