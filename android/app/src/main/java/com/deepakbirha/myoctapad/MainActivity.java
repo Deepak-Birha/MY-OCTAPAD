@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
    }
   });
   setContentView(web);
-  web.loadUrl("file:///android_asset/web/index.html?build=2");
+  web.loadUrl("file:///android_asset/web/index.html?build=3");
   manager=(MidiManager)getSystemService(Context.MIDI_SERVICE);
  }
 
