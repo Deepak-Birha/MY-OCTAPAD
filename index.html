@@ -65,6 +65,12 @@ button{cursor:pointer}
 <p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
 </section>
 
+<div id="padPageNav" style="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100000!important;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;max-width:500px;margin:18px auto;padding:12px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px">
+<button id="previousPagePads" type="button" onclick="changePage(-1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">◀ PREVIOUS</button>
+<strong id="pageNumberPads" style="display:block!important;color:#00e5ff;font-size:18px;padding:8px">PAGE 1 / 200</strong>
+<button id="nextPagePads" type="button" onclick="changePage(1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">NEXT ▶</button>
+</div>
+
 <div class="pads">
 <button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
 <button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
@@ -214,8 +220,11 @@ async function changePage(direction) {
   if (nextPage < 1 || nextPage > totalPages) return;
   currentPage = nextPage;
   document.getElementById("pageNumber").textContent = "PAGE " + currentPage + " / " + totalPages;
+  document.getElementById("pageNumberPads").textContent = "PAGE " + currentPage + " / " + totalPages;
   document.getElementById("previousPage").disabled = currentPage === 1;
   document.getElementById("nextPage").disabled = currentPage === totalPages;
+  document.getElementById("previousPagePads").disabled = currentPage === 1;
+  document.getElementById("nextPagePads").disabled = currentPage === totalPages;
   sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
   updateSampleRows();
   await loadKit();
@@ -297,6 +306,7 @@ function handleMIDIMessage(event) {
 
 updateSampleRows();
 document.getElementById("previousPage").disabled = true;
+document.getElementById("previousPagePads").disabled = true;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
