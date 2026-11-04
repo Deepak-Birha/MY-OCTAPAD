@@ -19,7 +19,7 @@ h1{color:#00e5ff;margin:10px 0}
 .pad{min-height:112px;border:2px solid #00e5ff;border-radius:18px;background:#222b40;color:white;font-size:22px;font-weight:bold;box-shadow:0 5px 15px #0008;touch-action:manipulation}
 .pad:active,.pad.hit{background:#00bcd4;color:#071018;transform:scale(.97)}
 .controls{margin:18px auto;max-width:500px}
-.page-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin:18px auto;max-width:500px}
+.page-nav{position:fixed;left:0;right:0;bottom:0;z-index:99999;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto;padding:10px 8px calc(10px + env(safe-area-inset-bottom));max-width:100%;background:#10121b;border-top:2px solid #00e5ff;box-shadow:0 -4px 14px #000b}.page-nav button{padding:12px 14px;font-size:14px;min-width:105px;flex:0 1 130px}body{padding-bottom:82px}
 .page-nav button{background:#00c6d7;color:#071018;border:0;border-radius:12px;padding:13px 20px;font-size:16px;font-weight:bold;min-width:120px}
 .page-nav button:disabled{opacity:.35}
 #pageNumber{font-size:18px;font-weight:bold;color:#00e5ff;min-width:92px}
