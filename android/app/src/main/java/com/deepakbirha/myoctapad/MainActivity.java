@@ -22,6 +22,8 @@ public class MainActivity extends Activity {
   settings.setDomStorageEnabled(true);
   settings.setAllowFileAccess(true);
   settings.setAllowContentAccess(true);
+  settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+  web.clearCache(true);
   web.addJavascriptInterface(new Bridge(),"AndroidMIDI");
   web.setWebChromeClient(new WebChromeClient(){
    @Override public boolean onShowFileChooser(WebView view,ValueCallback<Uri[]> callback,FileChooserParams params){
@@ -38,7 +40,7 @@ public class MainActivity extends Activity {
    }
   });
   setContentView(web);
-  web.loadUrl("file:///android_asset/web/index.html");
+  web.loadUrl("file:///android_asset/web/index.html?build=2");
   manager=(MidiManager)getSystemService(Context.MIDI_SERVICE);
  }
 
