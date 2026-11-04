@@ -36,6 +36,17 @@ button{cursor:pointer}
 <h1>🥁 MY OCTAPAD</h1>
 <p>8 Drum Pads · USB MIDI Keyboard</p>
 
+<section class="sample-controls">
+<h2 style="margin:0 0 10px;font-size:22px;color:#00e0ee">🎵 LOAD WAV FILES – CHOOSE WAV</h2><h3>Pad 1 से 8 के लिए WAV Samples</h3>
+<p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
+<div id="sampleRows"></div>
+<div class="kit-actions">
+<button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
+<button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
+</div>
+<p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
+</section>
+
 <div class="pads">
 <button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
 <button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
@@ -47,16 +58,7 @@ button{cursor:pointer}
 <button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
 </div>
 
-<section class="sample-controls">
-<h3>🎵 WAV Samples – Pad 1 से 8</h3>
-<p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
-<div id="sampleRows"></div>
-<div class="kit-actions">
-<button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
-<button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
-</div>
-<p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
-</section>
+
 
 <div class="controls">
 <h3>🎹 USB MIDI Keyboard</h3>
