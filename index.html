@@ -3,338 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#070a13">
+<meta name="theme-color" content="#10121b">
+<meta name="description" content="MY OCTAPAD - Mobile Drum Pad with USB MIDI Keyboard Support">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MY OCTAPAD">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>DEEPAK BIRHA</title>
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
     margin: 0;
-    background: #070a13;
+    background: #10121b;
     color: white;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 15px;
     user-select: none;
     overflow-x: hidden;
 }
 
 /* स्क्रीन व्यू मैनेजमेंट */
-.screen { display: none; width: 100vw; min-height: 100vh; padding: 10px; }
-.screen.active { display: flex; flex-direction: column; }
+.screen { display: none; width: 100vw; min-height: 100vh; }
+.screen.active { display: block; }
+
+h1 { color: #dd750f; margin: 10px 0; }
+button { cursor: pointer; }
+input[type=range] { width: 90%; accent-color: #00e5ff; }
 
 /* ==================================================== */
-/* SCREEN 1: LANDSCAPE VIEW (EXACT IMAGE LOOK)          */
+/* SCREEN 1: LANDSCAPE LAYOUT (MAIN PAD GRID)           */
 /* ==================================================== */
-#screen-pad {
-    align-items: center;
-    justify-content: flex-start;
-    padding: 15px 25px;
-}
-
-/* टॉप बार का मुख्य ढांचा */
-.top-navbar {
+.top-navbar-pad {
     display: flex;
-    width: 100%;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 15px;
+    max-width: 1000px;
+    margin: 0 auto 15px;
+    background: #171d2c;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid #33415c;
 }
-
-/* लेफ्ट साइड - वॉल्यूम और नाम */
-.nav-left-section {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    flex: 1;
-}
-
-.volume-wrapper {
+.vol-box-pad {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     width: 180px;
 }
-.volume-wrapper label {
-    font-size: 11px;
-    color: #fff;
-    margin-bottom: 6px;
-    font-weight: bold;
-}
-.volume-wrapper input[type=range] {
-    width: 100%;
-    accent-color: #00e5ff;
-    height: 4px;
-}
+.vol-box-pad label { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #a0aec0; }
 
-.identity-header {
-    text-align: left;
-}
-.identity-header h1 {
-    margin: 0;
-    font-size: 20px;
-    color: #dd750f;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-.identity-header p {
-    margin: 1px 0 0;
-    font-size: 10px;
-    color: #718096;
-}
+.brand-block-pad h1 { margin: 0; font-size: 22px; color: #dd750f; }
+.brand-block-pad p { margin: 2px 0 0; font-size: 11px; color: #9eacc3; }
 
-/* सेंटर एक्शन्स - लोड किट और मिडी बटन */
-.nav-center-section {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-.btn-ui {
-    background: #00bcd4;
-    color: #071018;
-    border: 0;
-    border-radius: 6px;
-    padding: 10px 18px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-}
-.btn-ui:active { transform: scale(0.96); }
+.center-actions-pad { display: flex; gap: 10px; align-items: center; }
+.btn-cyan-pad { background: #00c6d7; color: #071018; border: 0; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: bold; }
+.midi-wrapper-pad { display: flex; flex-direction: column; align-items: center; }
+.midi-status-pad { font-size: 10px; color: #c7d2e2; margin-top: 4px; }
 
-.midi-info-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.midi-small-desc {
-    font-size: 9px;
-    color: #a0aec0;
-    margin-top: 4px;
-    text-align: center;
-}
+.nav-box-pad { display: flex; align-items: center; background: #10121b; border: 2px solid #00e5ff; border-radius: 10px; padding: 3px; }
+.nav-box-pad button { background: #00c6d7; color: #071018; border: 0; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: bold; }
+.nav-box-pad span { color: #00e5ff; font-weight: bold; font-size: 14px; padding: 0 12px; min-width: 100px; text-align: center; }
 
-/* राइट साइड - सुंदर बॉर्डर वाला नेविगेशन बॉक्स */
-.nav-right-section {
-    display: flex;
-    align-items: center;
-    border: 2px solid #00e5ff;
-    border-radius: 10px;
-    padding: 3px;
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
-}
-.nav-right-section button {
-    background: #00bcd4;
-    color: #071018;
-    border: 0;
-    border-radius: 6px;
-    padding: 9px 16px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.nav-right-section span {
-    color: #00e5ff;
-    font-weight: bold;
-    font-size: 14px;
-    padding: 0 15px;
-    min-width: 110px;
-    text-align: center;
-}
+.pads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 1000px; margin: 15px auto; }
+.pad { min-height: 130px; border: 3px solid #00e5ff; border-radius: 18px; background: #222b40; color: white; font-size: 24px; font-weight: bold; box-shadow: 0 5px 15px #0008; touch-action: manipulation; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.pad small { font-size: 14px; color: #a0aec0; margin-top: 5px; font-weight: normal; }
+.pad:active, .pad.hit { background: #00bcd4; color: #071018; box-shadow: 0 0 25px #00e5ff; transform: scale(.96); }
+.pad:active small, .pad.hit small { color: #071018; }
 
-/* 8 बड़े आरजीबी नियॉन पैड्स ग्रिड लेआउट */
-.octapad-grid-layout {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    width: 100%;
-    flex-grow: 1;
-}
-
-.pad-neon-box {
-    background: #111424;
-    border: 3px solid var(--neon-color);
-    border-radius: 22px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    min-height: 155px;
-    box-shadow: 0 0 12px var(--neon-glow-dim), inset 0 0 10px rgba(0,0,0,0.8);
-    transition: all 0.05s cubic-bezier(0.1, 0.8, 0.3, 1);
-}
-.pad-neon-box small {
-    font-size: 15px;
-    color: #cbd5e1;
-    margin-top: 8px;
-    font-weight: normal;
-    letter-spacing: 0.5px;
-}
-
-.pad-neon-box:active, .pad-neon-box.hit {
-    background: var(--neon-color);
-    color: #000000;
-    box-shadow: 0 0 35px var(--neon-color), 0 0 15px var(--neon-color), inset 0 0 15px rgba(255,255,255,0.8);
-    transform: scale(0.95);
-}
-.pad-neon-box:active small, .pad-neon-box.hit small { 
-    color: #000000; 
-    font-weight: bold;
-}
-
-.bottom-micro-text {
-    font-size: 9px;
-    color: #4a5568;
-    margin-top: 10px;
-    text-align: center;
-    width: 100%;
-}
+.hint { font-size: 12px; color: #9eacc3; max-width: 500px; margin: 10px auto; line-height: 1.5; }
 
 /* ==================================================== */
-/* SCREEN 2: PORTRAIT VIEW (TABLE ARRANGEMENT)          */
+/* SCREEN 2: PORTRAIT LAYOUT (PERFECT TABLE VIEW)       */
 /* ==================================================== */
-#screen-kit {
-    align-items: center;
-    justify-content: flex-start;
-    padding: 25px 15px;
-    background: #0d111d;
+.sample-controls {
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 16px;
+    border: 1px solid #33415c;
+    border-radius: 16px;
+    background: #171d2c;
 }
 
-.table-setup-card {
+/* 🎯 सुधरा हुआ परफेक्ट वर्टिकल टेबल लेआउट */
+.octapad-table {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
+    margin: 15px 0;
 }
-
-.table-info-header {
-    font-size: 13px;
-    color: #a0aec0;
-    line-height: 1.6;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.vertical-table-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 30px;
-}
-.table-item-row {
+.sample-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 6px;
-}
-.table-item-row span {
-    font-size: 15px;
-    color: #fff;
     text-align: left;
+}
+.sample-row:last-child { border-bottom: 0; }
+.sample-row span {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    flex: 1;
 }
-
-.table-footer-buttons {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-.btn-table-action {
-    flex: 1;
+.sample-row button {
     border: 0;
     border-radius: 8px;
-    padding: 12px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    background: #00bcd4;
+    padding: 9px 15px;
+    background: #00c6d7;
     color: #071018;
-}
-
-.btn-close-portrait {
-    background: #e53e3e;
-    color: white;
-    width: 100%;
-    border-radius: 8px;
-    border: 0;
-    padding: 12px;
     font-weight: bold;
-    font-size: 14px;
-    margin-top: 15px;
-    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
-#sampleStatus {
-    font-size: 13px;
-    color: #a0aec0;
-    text-align: center;
-}
+.kit-actions { display: flex; gap: 12px; justify-content: center; margin-top: 15px; }
+.kit-button { border: 0; border-radius: 10px; padding: 12px 20px; background: #00c6d7; color: #071018; font-weight: bold; font-size: 15px; flex: 1; }
+.btn-back-to-pad { background: #ff4757; color: white; width: 100%; border: 0; border-radius: 10px; padding: 13px; font-weight: bold; font-size: 15px; margin-top: 15px; }
+#sampleStatus { font-size: 14px; color: #c7d2e2; margin-top: 12px; min-height: 20px; }
 </style>
 </head>
 <body>
 
-    <!-- SCREEN 1: LANDSCAPE MODE (8 RGB NEON DRUM PADS) -->
-    <div id="screen-pad" class="screen active">
-        
-        <div class="top-navbar">
-            <div class="nav-left-section">
-                <div class="volume-wrapper">
-                    <label>🔊 Volume Control</label>
-                    <input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="modifyMasterVolume(this.value)">
-                </div>
-                
-                    <h1>DEEPAK BIRHA</h1>
-                    <p>USB MIDI Keyboard</p>
+    <!-- SCREEN 1: LANDSCAPE SCREEN -->
+    <div id="screen-pad-view" class="screen active">
+        <div class="top-navbar-pad">
+            <div class="vol-box-pad">
+                <label>🔊 VOLUME CONTROL</label>
+                <input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
+            </div>
+            
+            <div class="brand-block-pad">
+                <h1>DEEPAK BIRHA</h1>
+                <p>USB MIDI Keyboard</p>
+            </div>
+
+            <div class="center-actions-pad">
+                <button class="btn-cyan-pad" onclick="showKitConfigurationScreen()">KIT LOAD</button>
+                <div class="midi-wrapper-pad">
+                    <button class="btn-cyan-pad" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
+                    <span class="midi-status-pad" id="midiStatus">MIDI keyboard not connected</span>
                 </div>
             </div>
 
-            <div class="nav-center-section">
-                <button class="btn-ui" onclick="switchToPortraitKit()">KIT LOAD</button>
-                <div class="midi-info-container">
-                    <button class="btn-ui" id="midiButton" onclick="triggerMidiConnect()">CONNECT MIDI KEYBOARD</button>
-                    <span class="midi-small-desc" id="midiStatus">MIDI keyboard not connected</span>
-                </div>
-            </div>
-
-            <div class="nav-right-section">
-                <button id="previousPagePads" onclick="shiftPage(-1)">◀ PREVIOUS</button>
+            <div class="nav-box-pad">
+                <button id="previousPagePads" type="button" onclick="changePage(-1)">◀ PREV</button>
                 <span id="pageNumberPads">PAGE 1 / 200</span>
-                <button id="nextPagePads" onclick="shiftPage(1)">NEXT ▶</button>
+                <button id="nextPagePads" type="button" onclick="changePage(1)">NEXT ▶</button>
             </div>
         </div>
 
-        <div class="octapad-grid-layout">
-            <div class="pad-neon-box" id="pad-0" onpointerdown="firePadHit(0)" style="--neon-color: #ff0055; --neon-glow-dim: rgba(255, 0, 85, 0.25);">PAD 1<small>KICK</small></div>
-            <div class="pad-neon-box" id="pad-1" onpointerdown="firePadHit(1)" style="--neon-color: #00ffcc; --neon-glow-dim: rgba(0, 255, 204, 0.25);">PAD 2<small>SNARE</small></div>
-            <div class="pad-neon-box" id="pad-2" onpointerdown="firePadHit(2)" style="--neon-color: #9900ff; --neon-glow-dim: rgba(153, 0, 255, 0.25);">PAD 3<small>RIM / SNARE</small></div>
-            <div class="pad-neon-box" id="pad-3" onpointerdown="firePadHit(3)" style="--neon-color: #ffcc00; --neon-glow-dim: rgba(255, 204, 0, 0.25);">PAD 4<small>LOW TOM</small></div>
-            <div class="pad-neon-box" id="pad-4" onpointerdown="firePadHit(4)" style="--neon-color: #ff00ff; --neon-glow-dim: rgba(255, 0, 255, 0.25);">PAD 5<small>FLOOR TOM</small></div>
-            <div class="pad-neon-box" id="pad-5" onpointerdown="firePadHit(5)" style="--neon-color: #00ff00; --neon-glow-dim: rgba(0, 255, 0, 0.25);">PAD 6<small>HI TOM</small></div>
-            <div class="pad-neon-box" id="pad-6" onpointerdown="firePadHit(6)" style="--neon-color: #0099ff; --neon-glow-dim: rgba(0, 153, 255, 0.25);">PAD 7<small>HIGH TOM</small></div>
-            <div class="pad-neon-box" id="pad-7" onpointerdown="firePadHit(7)" style="--neon-color: #ff5500; --neon-glow-dim: rgba(255, 85, 0, 0.25);">PAD 8<small>CYMBAL</small></div>
+        <div class="pads">
+            <button class="pad" id="pad-0" onpointerdown="play(0)">PAD 1<small>KICK</small></button>
+            <button class="pad" id="pad-1" onpointerdown="play(1)">PAD 2<small>SNARE</small></button>
+            <button class="pad" id="pad-2" onpointerdown="play(2)">PAD 3<small>RIM / SNARE</small></button>
+            <button class="pad" id="pad-3" onpointerdown="play(3)">PAD 4<small>LOW TOM</small></button>
+            <button class="pad" id="pad-4" onpointerdown="play(4)">PAD 5<small>FLOOR TOM</small></button>
+            <button class="pad" id="pad-5" onpointerdown="play(5)">PAD 6<small>HI TOM</small></button>
+            <button class="pad" id="pad-6" onpointerdown="play(6)">PAD 7<small>HIGH TOM</small></button>
+            <button class="pad" id="pad-7" onpointerdown="play(7)">PAD 8<small>CYMBAL</small></button>
         </div>
-
-        <div class="bottom-micro-text">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</div>
+        <p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
     </div>
 
-    <!-- SCREEN 2: PORTRAIT MODE (TABLE ARRANGEMENT) -->
-    <div id="screen-kit" class="screen">
-        <div class="table-setup-card">
-            <div class="table-info-header">
-                हर Pad के लिए अपनी .wav ... चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।
-            </div>
-
-            <div class="vertical-table-rows">
-                <div class="table-item-row"><span id="text-row-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="storeWavFile(0,this.files)"><button class="btn-ui" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+    <!-- SCREEN 2: PORTRAIT SCREEN (PERFECT TABLE VIEW) -->
+    <div id="screen-kit-view" class="screen">
+        <section class="sample-controls">
+            <h2 style="margin:0 0 5px;font-size:24px;color:#55ff1a">HILLTOP NAGPUR</h2>
+            <h3 style="margin:0 0 10px; color:#a0aec0;">Ph.9175028450</h3>
+            <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
+            
+            <div class="octapad-table" id="sampleRows">
+                <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files)"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+                <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files)"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+                <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files)"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+                <div class="sample-row"><span id="lbl-3">4-Default Sound</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files)"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+                <div class="sample-row"><span id="lbl-4">5-Default Sound</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files)"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+                <div class="sample-row"><span id="lbl-5">6-Default Sound</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files)"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
