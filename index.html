@@ -113,15 +113,15 @@ button{cursor:pointer}
         <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
         <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
         <div class="octapad-vertical-table" id="sampleRows">
-            <!-- 🎯 FIXED: onchange में this.files[0] पास किया गया है ताकि पहली ही फ़ाइल लोड हो -->
-            <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-3">4-Default Sound</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files[0])"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-4">5-Default Sound</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files[0])"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-5">6-Default Sound</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files[0])"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-6">7-Default Sound</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-7">8-Default Sound</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
+            <!-- 🎯 FIXED: onchange में पास की गई फाइल्स को जावास्क्रिप्ट अब सही तरीके से हैंडल करेगा -->
+            <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files)"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files)"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files)"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-3">4-Default Sound</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files)"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-4">5-Default Sound</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files)"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-5">6-Default Sound</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files)"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-6">7-Default Sound</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files)"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-7">8-Default Sound</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files)"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
         </div>
         <div class="kit-actions">
             <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
@@ -140,4 +140,4 @@ let midiAccess = null;
 const totalPages = 200;
 let currentPage = 1;
 
-// 200 पेज का डेटाबेस एरे ट्रैकिंग के लिए
+// 200 पेज का रीयल-टाइम ऑफलाइन मेमोरी एरे
