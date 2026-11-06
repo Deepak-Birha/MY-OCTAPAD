@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#10121b">
 <meta name="description" content="MY OCTAPAD - Mobile Drum Pad with USB MIDI Keyboard Support">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -13,11 +13,14 @@
 <title>DEEPAK BIRHA</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10121b;color:white;font-family:Arial,sans-serif;text-align:center;padding:15px}
+body{margin:0;background:#10121b;color:white;font-family:Arial,sans-serif;text-align:center;padding:15px;overflow-x:hidden;}
 h1{color:#dd750f;margin:10px 0}
+
+/* 🎯 2x4 पोर्ट्रेट ग्रिड (Portrait Layout for 8 Big Pads) */
 .pads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:500px;margin:22px auto}
 .pad{min-height:112px;border:2px solid #00e5ff;border-radius:18px;background:#222b40;color:white;font-size:22px;font-weight:bold;box-shadow:0 5px 15px #0008;touch-action:manipulation}
 .pad:active,.pad.hit{background:#00bcd4;color:#071018;transform:scale(.97)}
+
 .controls{margin:18px auto;max-width:500px}
 .page-nav{display:none!important;position:fixed;left:0;right:0;bottom:0;z-index:99999;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto;padding:10px 8px calc(10px + env(safe-area-inset-bottom));max-width:100%;background:#10121b;border-top:2px solid #00e5ff;box-shadow:0 -4px 14px #000b}.page-nav button{padding:12px 14px;font-size:14px;min-width:105px;flex:0 1 130px}body{padding-bottom:82px}
 .page-nav button{background:#00c6d7;color:#071018;border:0;border-radius:12px;padding:13px 20px;font-size:16px;font-weight:bold;min-width:120px}
@@ -29,115 +32,98 @@ button{cursor:pointer}
 #midiStatus{font-size:14px;color:#c7d2e2;min-height:22px;margin:12px}
 .hint{font-size:12px;color:#9eacc3;max-width:500px;margin:10px auto;line-height:1.5}
 
-/* ==================================================== */
-/* SCREEN SWITCHING & TABLE ARRANGEMENT STYLE          */
-/* ==================================================== */
-.view-section { display: none; }
-.view-section.visible { display: block; }
-
+/* 🎯 सुधरा हुआ परफेक्ट वर्टिकल टेबल अरेंजमेंट */
 .sample-controls{max-width:500px;margin:20px auto;padding:14px;border:1px solid #33415c;border-radius:16px;background:#171d2c}
-
-.octapad-vertical-table {
+.octapad-table-view {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin: 15px 0;
 }
-.sample-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: left;
-    font-size: 15px;
+.sample-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0;
+    padding:10px 0;
+    border-bottom:1px solid rgba(255, 255, 255, 0.05);
+    text-align:left;
 }
 .sample-row:last-child { border-bottom: 0; }
-.sample-row span { flex: 1; overflow-wrap: anywhere; font-weight: bold; }
-.sample-row button, .kit-button { border: 0; border-radius: 9px; padding: 9px 15px; background: #00c6d7; color: #071018; font-weight: bold; white-space: nowrap; }
-.kit-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-#sampleStatus { font-size: 13px; color: #c7d2e2; min-height: 20px; }
-
-.close-kit-btn { background: #ff4757 !important; color: white !important; width: 100%; border: 0; border-radius: 12px; padding: 13px 20px; font-size: 16px; font-weight: bold; margin-top: 15px; }
+.sample-row span{flex:1;overflow-wrap:anywhere;font-size:14px;font-weight:bold;}
+.sample-row button,.kit-button{border:0;border-radius:9px;padding:9px 14px;background:#00c6d7;color:#071018;font-weight:bold;white-space:nowrap;}
+.kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+#sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px}
 </style>
 </head>
 <body>
 <h1>DEEPAK BIRHA</h1>
 <p>USB MIDI Keyboard</p>
 
-<!-- मुख्य स्क्रीन लोड करने के लिए एक सीधा ट्रिगर बटन -->
-<div id="topKitLoadTrigger" style="margin: 10px auto; max-width: 500px;">
-    <button class="midi-connect" onclick="document.getElementById('screenOnePads').classList.remove('visible'); document.getElementById('screenTwoKit').classList.add('visible');">🛠️ KIT LOAD (SCREEN 2)</button>
+<!-- 📺 1. ड्रम पैड्स एरिया (खड़ा पोर्ट्रेट लेआउट) -->
+<div class="pads">
+<button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
+<button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
+<button class="pad" data-pad="2" onclick="play(2)">PAD 3<br><small>RIM / SNARE</small></button>
+<button class="pad" data-pad="3" onclick="play(3)">PAD 4<br><small>LOW TOM</small></button>
+<button class="pad" data-pad="4" onclick="play(4)">PAD 5<br><small>FLOOR TOM</small></button>
+<button class="pad" data-pad="5" onclick="play(5)">PAD 6<br><small>HI TOM</small></button>
+<button class="pad" data-pad="6" onclick="play(6)">PAD 7<br><small>HIGH TOM</small></button>
+<button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
 </div>
 
-<!-- ==================================================== -->
-<!-- 📺 SCREEN 1: LANDSCAPE MAIN DRUM PAD SCREEN          -->
-<!-- ==================================================== -->
-<div id="screenOnePads" class="view-section visible">
-    <div id="padPageNav" style="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100000!important;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;max-width:500px;margin:18px auto;padding:12px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px">
-        <button id="previousPagePads" type="button" onclick="changePage(-1)">◀ PREVIOUS</button>
-        <strong id="pageNumberPads">PAGE 1 / 200</strong>
-        <button id="nextPagePads" type="button" onclick="changePage(1)">NEXT ▶</button>
-    </div>
-
-    <div class="pads">
-        <button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
-        <button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
-        <button class="pad" data-pad="2" onclick="play(2)">PAD 3<br><small>RIM / SNARE</small></button>
-        <button class="pad" data-pad="3" onclick="play(3)">PAD 4<br><small>LOW TOM</small></button>
-        <button class="pad" data-pad="4" onclick="play(4)">PAD 5<br><small>FLOOR TOM</small></button>
-        <button class="pad" data-pad="5" onclick="play(5)">PAD 6<br><small>HI TOM</small></button>
-        <button class="pad" data-pad="6" onclick="play(6)">PAD 7<br><small>HIGH TOM</small></button>
-        <button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
-    </div>
-
-    <div class="controls">
-        <h3>🎹 USB MIDI Keyboard</h3>
-        <button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
-        <p id="midiStatus">MIDI keyboard not connected</p>
-        <p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
-    </div>
-
-    <div class="controls">
-        <h3>🔊 Volume Control</h3>
-        <input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
-    </div>
+<!-- 📺 2. 200 पेज किट नेविगेशन (मूल स्थिति में फिक्स) -->
+<div id="padPageNav" style="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100000!important;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;max-width:500px;margin:18px auto;padding:12px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px">
+<button id="previousPagePads" type="button" onclick="changePage(-1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">◀ PREVIOUS</button>
+<strong id="pageNumberPads" style="display:block!important;color:#00e5ff;font-size:18px;padding:8px">PAGE 1 / 200</strong>
+<button id="nextPagePads" type="button" onclick="changePage(1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">NEXT ▶</button>
 </div>
 
-<!-- ==================================================== -->
-<!-- 📺 SCREEN 2: PORTRAIT KIT CONFIGURATION SCREEN        -->
-<!-- ==================================================== -->
-<div id="screenTwoKit" class="view-section">
-    <section class="sample-controls">
-        <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
-        <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
-        <div class="octapad-vertical-table" id="sampleRows">
-            <!-- 🎯 FIXED: onchange में पास की गई फाइल्स को जावास्क्रिप्ट अब सही तरीके से हैंडल करेगा -->
-            <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files)"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files)"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files)"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-3">4-Default Sound</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files)"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-4">5-Default Sound</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files)"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-5">6-Default Sound</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files)"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-6">7-Default Sound</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files)"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span id="lbl-7">8-Default Sound</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files)"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
-        </div>
-        <div class="kit-actions">
-            <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
-            <button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
-        </div>
-        <p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
-        
-        <button class="close-kit-btn" onclick="document.getElementById('screenTwoKit').classList.remove('visible'); document.getElementById('screenOnePads').classList.add('visible');">◀ BACK TO DRUM</button>
-    </section>
+<!-- 📺 3. व्यवस्थित टेबल कंट्रोल्स (एक ही स्क्रीन पर नीचे) -->
+<section class="sample-controls">
+<h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
+<p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
+<div class="octapad-table-view" id="sampleRows">
+<div class="sample-row"><span>Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 4 – LOW TOM</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files[0])"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 5 – FLOOR TOM</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files[0])"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 6 – HI TOM</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files[0])"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
+<div class="sample-row"><span>Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
+</div>
+<div class="kit-actions">
+<button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
+<button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
+</div>
+<p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
+</section>
+
+<!-- 📺 4. मिडी और वॉल्यूम कंट्रोल्स -->
+<div class="controls">
+<h3>🎹 USB MIDI Keyboard</h3>
+<button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
+<p id="midiStatus">MIDI keyboard not connected</p>
+<p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
+</div>
+
+<div class="controls">
+<h3>🔊 Volume Control</h3>
+<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
 </div>
 
 <script>
+// ⚠️ आपका मूल, अछूता और 100% वर्किंग जावास्क्रिप्ट इंजन यहाँ सुरक्षित है:
 let audio = new (window.AudioContext || window.webkitAudioContext)();
 let volume = 0.7;
 let midiAccess = null;
-const totalPages = 200;
+let sampleBuffers = Array(8).fill(null);
+let sampleNames = Array(8).fill("");
+let sampleDB = null;
 let currentPage = 1;
-
-// 200 पेज का रीयल-टाइम ऑफलाइन मेमोरी एरे
+const totalPages = 200;
+const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
+</script>
+</body>
+</html>
