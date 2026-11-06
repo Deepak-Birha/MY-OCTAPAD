@@ -30,22 +30,36 @@ button{cursor:pointer}
 .hint{font-size:12px;color:#9eacc3;max-width:500px;margin:10px auto;line-height:1.5}
 
 /* ==================================================== */
-/* 🎯 SCREEN SWITCHING & TABLE ARRANGEMENT FIX          */
+/* SCREEN SWITCHING & TABLE ARRANGEMENT STYLE          */
 /* ==================================================== */
-/* मुख्य ड्रम स्क्रीन और किट स्क्रीन को नियंत्रित करने के लिए क्लास */
 .view-section { display: none; }
 .view-section.visible { display: block; }
 
-/* इमेज की तरह बिल्कुल सीधा और परफेक्ट टेबल रो लेआउट */
 .sample-controls{max-width:500px;margin:20px auto;padding:14px;border:1px solid #33415c;border-radius:16px;background:#171d2c}
-.sample-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 0;border-bottom:1px solid rgba(255, 255, 255, 0.05);text-align:left;font-size:15px}
-.sample-row:last-child { border-bottom: 0; }
-.sample-row span{flex:1;overflow-wrap:anywhere;font-weight:bold}
-.sample-row button,.kit-button{border:0;border-radius:9px;padding:9px 15px;background:#00c6d7;color:#071018;font-weight:bold;white-space:nowrap}
-.kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-#sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px}
 
-/* वापस मुख्य स्क्रीन पर आने वाले बटन का सुंदर डिज़ाइन */
+.octapad-vertical-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 15px 0;
+}
+.sample-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: left;
+    font-size: 15px;
+}
+.sample-row:last-child { border-bottom: 0; }
+.sample-row span { flex: 1; overflow-wrap: anywhere; font-weight: bold; }
+.sample-row button, .kit-button { border: 0; border-radius: 9px; padding: 9px 15px; background: #00c6d7; color: #071018; font-weight: bold; white-space: nowrap; }
+.kit-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+#sampleStatus { font-size: 13px; color: #c7d2e2; min-height: 20px; }
+
+/* वापस ड्रम स्क्रीन पर जाने वाला सुंदर बटन */
 .close-kit-btn { background: #ff4757 !important; color: white !important; width: 100%; border: 0; border-radius: 12px; padding: 13px 20px; font-size: 16px; font-weight: bold; margin-top: 15px; }
 </style>
 </head>
@@ -60,12 +74,12 @@ button{cursor:pointer}
 
 <!-- ==================================================== -->
 <!-- 📺 SCREEN 1: LANDSCAPE MAIN DRUM PAD SCREEN          -->
-<!-- ==================================================== */ -->
+<!-- ==================================================== -->
 <div id="screenOnePads" class="view-section visible">
     <div id="padPageNav" style="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100000!important;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;max-width:500px;margin:18px auto;padding:12px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px">
-        <button id="previousPagePads" type="button" onclick="changePage(-1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">◀ PREVIOUS</button>
-        <strong id="pageNumberPads" style="display:block!important;color:#00e5ff;font-size:18px;padding:8px">PAGE 1 / 200</strong>
-        <button id="nextPagePads" type="button" onclick="changePage(1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">NEXT ▶</button>
+        <button id="previousPagePads" type="button" onclick="changePage(-1)">◀ PREVIOUS</button>
+        <strong id="pageNumberPads">PAGE 1 / 200</strong>
+        <button id="nextPagePads" type="button" onclick="changePage(1)">NEXT ▶</button>
     </div>
 
     <div class="pads">
@@ -94,20 +108,20 @@ button{cursor:pointer}
 
 <!-- ==================================================== -->
 <!-- 📺 SCREEN 2: PORTRAIT KIT CONFIGURATION SCREEN        -->
-<!-- ==================================================== */ -->
+<!-- ==================================================== -->
 <div id="screenTwoKit" class="view-section">
     <section class="sample-controls">
         <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
         <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
-        <div id="sampleRows">
-            <div class="sample-row"><span>Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files)"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files)"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files)"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 4 – LOW TOM</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files)"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 5 – FLOOR TOM</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files)"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 6 – HI TOM</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files)"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files)"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files)"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
+        <div class="octapad-vertical-table" id="sampleRows">
+            <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-3">4-Default Sound</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files[0])"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-4">5-Default Sound</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files[0])"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-5">6-Default Sound</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files[0])"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-6">7-Default Sound</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-7">8-Default Sound</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
         </div>
         <div class="kit-actions">
             <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
@@ -115,4 +129,14 @@ button{cursor:pointer}
         </div>
         <p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
         
-        <!-- वापस पैड स्क्रीन पर जाने के लिए डायरेक्ट एक्शन बटन -->
+        <!-- वापस पैड स्क्रीन पर जाने के लिए एक्शन बटन -->
+        <button class="close-kit-btn" onclick="document.getElementById('screenTwoKit').classList.remove('visible'); document.getElementById('screenOnePads').classList.add('visible');">◀ BACK TO DRUM</button>
+    </section>
+</div>
+
+<script>
+let audio = new (window.AudioContext || window.webkitAudioContext)();
+let volume = 0.7;
+let midiAccess = null;
+let currentPage = 1;
+const totalPages = 200;
