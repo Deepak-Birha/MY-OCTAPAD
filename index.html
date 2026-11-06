@@ -31,7 +31,7 @@ button{cursor:pointer}
 .sample-controls{max-width:500px;margin:20px auto;padding:14px;border:1px solid #33415c;border-radius:16px;background:#171d2c}
 .sample-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 0;text-align:left;font-size:14px}
 .sample-row span{flex:1;overflow-wrap:anywhere}
-.sample-row button,.kit-button{border:0;border-radius:99px;padding:9px 12px;background:#00c6d7;color:#071018;font-weight:bold}
+.sample-row button,.kit-button{border:0;border-radius:9px;padding:9px 12px;background:#00c6d7;color:#071018;font-weight:bold}
 .kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 #sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px}
 </style>
@@ -78,6 +78,8 @@ button{cursor:pointer}
 <button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
 </div>
 
+
+
 <div class="controls">
 <h3>🎹 USB MIDI Keyboard</h3>
 <button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
@@ -100,6 +102,209 @@ let sampleDB = null;
 let currentPage = 1;
 const totalPages = 200;
 const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
+
+// MIDI note mapping: 36, 38, 40, 41, 43, 45, 47, 48 -> Pads 1-8
+const noteToPad = {36:0, 38:1, 40:2, 41:3, 43:4, 45:5, 47:6, 48:7};
+
+function play(n, velocity=100) {
+  if (audio.state === "suspended") audio.resume();
+  const now = audio.currentTime;
+  const level = volume * Math.max(0.01, velocity / 127);
+  if (sampleBuffers[n]) {
+    const source = audio.createBufferSource();
+    const sampleGain = audio.createGain();
+    source.buffer = sampleBuffers[n];
+    sampleGain.gain.value = level;
+    source.connect(sampleGain);
+    sampleGain.connect(audio.destination);
+    source.start();
+    flashPad(n);
+    return;
+  }
+  const gain = audio.createGain();
+  gain.connect(audio.destination);
+  const osc = audio.createOscillator();
+
+  // Simple synthesized drum voices; each pad has a distinct character.
+  const frequencies = [115, 185, 240, 150, 125, 190, 260, 720];
+  const durations = [0.22, 0.16, 0.12, 0.28, 0.32, 0.24, 0.2, 0.38];
+  osc.type = n === 7 ? "triangle" : (n === 1 || n === 2 ? "triangle" : "sine");
+  osc.frequency.setValueAtTime(frequencies[n], now);
+  osc.frequency.exponentialRampToValueAtTime(n === 7 ? 180 : 38, now + durations[n]);
+  gain.gain.setValueAtTime(level, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + durations[n]);
+  osc.connect(gain);
+  osc.start(now);
+  osc.stop(now + durations[n]);
+
+  flashPad(n);
+}
+
+
+function flashPad(n) {
+  const padButton = document.querySelector('[data-pad="' + n + '"]');
+  if (padButton) { padButton.classList.add("hit"); setTimeout(() => padButton.classList.remove("hit"), 100); }
+}
+
+function openSampleDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("DeepakBirhaOctapad", 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains("kit")) request.result.createObjectStore("kit", {keyPath:"pad"});
+    };
+    request.onsuccess = () => { sampleDB = request.result; resolve(sampleDB); };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function chooseWav(pad, file) {
+  if (!file) return;
+  if (!/\.wav$/i.test(file.name) && file.type !== "audio/wav" && file.type !== "audio/x-wav") {
+    document.getElementById("sampleStatus").textContent = "कृपया केवल .wav फाइल चुनें।"; return;
+  }
+  try {
+    if (audio.state === "suspended") await audio.resume();
+    const decoded = await audio.decodeAudioData((await file.arrayBuffer()).slice(0));
+    sampleBuffers[pad] = decoded; sampleNames[pad] = file.name;
+    updateSampleRows();
+    document.getElementById("sampleStatus").textContent = "Pad " + (pad+1) + " में " + file.name + " लोड हो गया।";
+  } catch (e) {
+    document.getElementById("sampleStatus").textContent = "यह WAV फाइल खुल नहीं सकी। दूसरी WAV फाइल आज़माएँ।";
+  }
+}
+
+function updateSampleRows() {
+  const rows = document.getElementById("sampleRows");
+  if (!rows) return;
+  rows.innerHTML = "";
+  padNames.forEach((name, pad) => {
+    const row = document.createElement("div"); row.className = "sample-row";
+    const label = document.createElement("span");
+    label.textContent = (pad+1) + "-" + (sampleNames[pad] ? sampleNames[pad] : "Default Sound");
+    const input = document.createElement("input"); input.type = "file"; input.accept = ".wav,audio/wav"; input.hidden = true;
+    input.onchange = () => chooseWav(pad, input.files[0]);
+    const button = document.createElement("button"); button.textContent = "CHOOSE WAV"; button.onclick = () => input.click();
+    row.append(label,input,button); rows.appendChild(row);
+  });
+}
+
+async function saveKit() {
+  try {
+    const db = sampleDB || await openSampleDB();
+    const tx = db.transaction("kit","readwrite"), store = tx.objectStore("kit");
+    sampleBuffers.forEach((buffer,pad) => { if (buffer) store.put({pad:(currentPage-1)*8+pad, page:currentPage, actualPad:pad, name:sampleNames[pad], wav:audioBufferToWav(buffer)}); });
+    await new Promise((resolve,reject) => { tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); });
+    document.getElementById("sampleStatus").textContent = "आपका Drum Kit मोबाइल में सेव हो गया।";
+  } catch(e) { document.getElementById("sampleStatus").textContent = "Save नहीं हुआ। मोबाइल storage की अनुमति जाँचें।"; }
+}
+
+async function loadKit() {
+  try {
+    const db = sampleDB || await openSampleDB();
+    const tx = db.transaction("kit","readonly"), req = tx.objectStore("kit").getAll();
+    const items = await new Promise((resolve,reject) => { req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); });
+    sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
+    const pageItems = items.filter(item => item.page === currentPage || (currentPage === 1 && item.page === undefined));
+    for (const item of pageItems) { const pad = item.actualPad !== undefined ? item.actualPad : item.pad; if (pad >= 0 && pad < 8) { sampleBuffers[pad] = await audio.decodeAudioData(item.wav.slice(0)); sampleNames[pad] = item.name; } }
+    updateSampleRows();
+    document.getElementById("sampleStatus").textContent = pageItems.length ? "Page " + currentPage + " का Drum Kit लोड हो गया ("+pageItems.length+" WAV samples)।" : "Page " + currentPage + " खाली है। इस पेज पर WAV चुनें और SAVE KIT दबाएँ।";
+  } catch(e) { document.getElementById("sampleStatus").textContent = "Load नहीं हुआ। पहले Save Kit करें।"; }
+}
+
+async function changePage(direction) {
+  const nextPage = currentPage + direction;
+  if (nextPage < 1 || nextPage > totalPages) return;
+  currentPage = nextPage;
+  document.getElementById("pageNumberPads").textContent = "PAGE " + currentPage + " / " + totalPages;
+  document.getElementById("previousPagePads").disabled = currentPage === 1;
+  document.getElementById("nextPagePads").disabled = currentPage === totalPages;
+  sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
+  updateSampleRows();
+  await loadKit();
+}
+
+function audioBufferToWav(buffer) {
+  const channels=buffer.numberOfChannels, frames=buffer.length, bytes=44+frames*channels*2;
+  const array=new ArrayBuffer(bytes), view=new DataView(array);
+  const write=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));};
+  write(0,"RIFF"); view.setUint32(4,bytes-8,true); write(8,"WAVE"); write(12,"fmt ");
+  view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,channels,true);
+  view.setUint32(24,buffer.sampleRate,true); view.setUint32(28,buffer.sampleRate*channels*2,true);
+  view.setUint16(32,channels*2,true); view.setUint16(34,16,true); write(36,"data"); view.setUint32(40,bytes-44,true);
+  let pos=44;
+  for(let i=0;i<frames;i++)for(let ch=0;ch<channels;ch++){
+    const s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));
+    view.setInt16(pos,s<0?s*32768:s*32767,true); pos+=2;
+  }
+  return array;
+}
+
+async function connectMIDI() {
+  const status = document.getElementById("midiStatus");
+  if (window.AndroidMIDI && typeof window.AndroidMIDI.connect === "function") {
+    status.textContent = "Android USB MIDI keyboard खोज रहे हैं...";
+    window.AndroidMIDI.connect();
+    return;
+  }
+  const button = document.getElementById("midiButton");
+  if (!navigator.requestMIDIAccess) {
+    status.textContent = "इस browser में Web MIDI support नहीं है। Latest Chrome Android इस्तेमाल करें।";
+    return;
+  }
+  button.disabled = true;
+  status.textContent = "MIDI keyboard खोज रहे हैं...";
+  try {
+    midiAccess = await navigator.requestMIDIAccess();
+    midiAccess.inputs.forEach(input => input.onmidimessage = handleMIDIMessage);
+    midiAccess.onstatechange = () => {
+      midiAccess.inputs.forEach(input => input.onmidimessage = handleMIDIMessage);
+      showMIDIDevices();
+    };
+    showMIDIDevices();
+  } catch (error) {
+    status.textContent = "MIDI permission नहीं मिली। Browser में Allow करें और दोबारा कोशिश करें।";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+window.onNativeMIDIEvent = function(note, velocity) {
+  const pad = noteToPad[note];
+  if (pad !== undefined && velocity > 0) play(pad, velocity);
+};
+window.onNativeMIDIStatus = function(message) {
+  document.getElementById("midiStatus").textContent = message;
+};
+
+function showMIDIDevices() {
+  const inputs = Array.from(midiAccess.inputs.values());
+  const status = document.getElementById("midiStatus");
+  if (inputs.length) {
+    status.textContent = "Connected: " + inputs.map(device => device.name || "MIDI Keyboard").join(", ");
+  } else {
+    status.textContent = "MIDI access मिल गया, लेकिन keyboard नहीं मिला। USB OTG और cable जाँचें।";
+  }
+}
+
+function handleMIDIMessage(event) {
+  const [command, note, velocity] = event.data;
+  const messageType = command & 0xf0;
+  if ((messageType === 0x90 && velocity > 0) || messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
+    const pad = noteToPad[note];
+    if (pad !== undefined && messageType === 0x90 && velocity > 0) {
+      play(pad, velocity);
+    }
+  }
+}
+
+updateSampleRows();
+document.getElementById("previousPagePads").disabled = true;
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.log("Service worker:", err));
+  });
+}
 </script>
 </body>
-</html>
+</html
