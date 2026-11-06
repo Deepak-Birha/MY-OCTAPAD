@@ -28,35 +28,11 @@ button{cursor:pointer}
 .midi-connect{background:#00c6d7;color:#071018;border:0;border-radius:12px;padding:13px 20px;font-size:16px;font-weight:bold}
 #midiStatus{font-size:14px;color:#c7d2e2;min-height:22px;margin:12px}
 .hint{font-size:12px;color:#9eacc3;max-width:500px;margin:10px auto;line-height:1.5}
-
-/* ==================================================== */
-/* 🎯 SCREEN 2: NEW ARRANGED TABLE CONTROLS STYLE        */
-/* ==================================================== */
 .sample-controls{max-width:500px;margin:20px auto;padding:14px;border:1px solid #33415c;border-radius:16px;background:#171d2c}
-
-/* नया वर्टिकल टेबल कंटेनर */
-.octapad-vertical-table {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 15px 0;
-}
-/* प्रत्येक रो (Row) के लिए सुंदर टेबल अरेंजमेंट */
-.sample-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin:0;
-    padding:10px 0;
-    border-bottom:1px solid rgba(255, 255, 255, 0.05);
-    text-align:left;
-    font-size:15px;
-}
-.sample-row:last-child { border-bottom: 0; }
-.sample-row span{flex:1; overflow-wrap:anywhere; font-weight:bold;}
-.sample-row button,.kit-button{border:0;border-radius:9px;padding:9px 15px;background:#00c6d7;color:#071018;font-weight:bold;white-space:nowrap;}
-.kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.sample-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 0;text-align:left;font-size:14px}
+.sample-row span{flex:1;overflow-wrap:anywhere}
+.sample-row button,.kit-button{border:0;border-radius:99px;padding:9px 12px;background:#00c6d7;color:#071018;font-weight:bold}
+.kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 #sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px}
 </style>
 </head>
@@ -64,12 +40,11 @@ button{cursor:pointer}
 <h1>DEEPAK BIRHA</h1>
 <p>USB MIDI Keyboard</p>
 
-<!-- SCREEN 2: KIT LOAD VIEW (WITH NEW TABLE ARRANGEMENT) -->
+
 <section class="sample-controls">
 <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
 <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
-
-<div class="octapad-vertical-table" id="sampleRows">
+<div id="sampleRows">
 <div class="sample-row"><span>Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
 <div class="sample-row"><span>Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
 <div class="sample-row"><span>Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
@@ -79,7 +54,6 @@ button{cursor:pointer}
 <div class="sample-row"><span>Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
 <div class="sample-row"><span>Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
 </div>
-
 <div class="kit-actions">
 <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
 <button class="kit-button" onclick="loadKit()">📂 LOAD KIT</button>
@@ -126,36 +100,6 @@ let sampleDB = null;
 let currentPage = 1;
 const totalPages = 200;
 const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
-
-// AI सुरक्षा नीतियों को बायपास करने वाला सुरक्षित फिक्स सिंटैक्स
-function playFallbackSynth(index) {
-    let osc = audio.createOscillator();
-    let gainNode = audio.createGain();
-    osc.connect(gainNode);
-    gainNode.connect(audio.destination);
-
-    let calculatedFreq = 150 + (index * 70);
-    osc.frequency.setValueAtTime(calculatedFreq, audio.currentTime);
-    
-    if(index === 0 || index === 3 || index === 4) {
-        osc.frequency.exponentialRampToValueAtTime(35, audio.currentTime + 0.15);
-    }
-    gainNode.gain.setValueAtTime(volume * 0.4, audio.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.2);
-    osc.start();
-    osc.stop(audio.currentTime + 0.2);
-}
-
-function play(index) {
-    if (audio && audio.state === 'suspended') {
-        audio.resume();
-    }
-    const pad = document.querySelector(`.pad[data-pad="${index}"]`);
-    if (pad) {
-        pad.classList.add('hit');
-        setTimeout(() => pad.classList.remove('hit'), 85);
-    }
-
-    if (sampleBuffers[index]) {
-        let source = audio.createBufferSource();
-        let gainNode = audio.createGain();
+</script>
+</body>
+</html>
