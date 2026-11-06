@@ -113,7 +113,7 @@ button{cursor:pointer}
         <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
         <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
         <div class="octapad-vertical-table" id="sampleRows">
-            <!-- 🎯 FIXED: this.files[0] मैपिंग ताकि फ़ाइल परफेक्ट लोड हो -->
+            <!-- 🎯 FIXED: onchange में this.files[0] पास किया गया है ताकि पहली ही फ़ाइल लोड हो -->
             <div class="sample-row"><span id="lbl-0">1-Default Sound</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
             <div class="sample-row"><span id="lbl-1">2-Default Sound</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
             <div class="sample-row"><span id="lbl-2">3-Default Sound</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
@@ -140,3 +140,4 @@ let midiAccess = null;
 const totalPages = 200;
 let currentPage = 1;
 
+// 200 पेज का डेटाबेस एरे ट्रैकिंग के लिए
