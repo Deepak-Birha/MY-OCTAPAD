@@ -16,7 +16,7 @@
 body{margin:0;background:#10121b;color:white;font-family:Arial,sans-serif;text-align:center;padding:15px}
 h1{color:#dd750f;margin:10px 0}
 
-/* 🎯 स्क्रीन हाइड/शो करने के लिए नया CSS */
+/* 🎯 स्क्रीन स्विचिंग के लिए डिफ़ॉल्ट लेआउट */
 .app-screen { display: none; }
 .app-screen.active { display: block; }
 
@@ -40,27 +40,26 @@ button{cursor:pointer}
 .kit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 #sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px}
 
-/* वापस जाने वाले बैक बटन की स्टाइल */
-.back-btn { background: #ff4757 !important; color: white !important; width: 100%; margin-top: 15px; border: 0; border-radius: 12px; padding: 13px 20px; font-size: 16px; font-weight: bold; }
+/* बैक बटन का लेआउट */
+.back-btn-ui { background: #ff4757 !important; color: white !important; width: 100%; border: 0; border-radius: 12px; padding: 13px 20px; font-size: 16px; font-weight: bold; margin-top: 15px; }
 </style>
 </head>
 <body>
 <h1>DEEPAK BIRHA</h1>
 <p>USB MIDI Keyboard</p>
 
-<!-- ========================================== -->
-<!-- 📺 SCREEN 1: मुख्य ड्रम पैड स्क्रीन          -->
-<!-- ========================================== -->
-<div id="mainScreen" class="app-screen active">
-    <!-- यहाँ हमने आपकी मूल स्क्रीन का बटन जोड़ दिया है -->
-    <div style="margin: 20px auto; max-width: 500px;">
-        <button class="midi-connect" onclick="openSecondScreen()">🛠️ KIT LOAD (SCREEN 2)</button>
+<!-- ==================================================== -->
+<!-- 📺 SCREEN 1: मुख्य ऑक्टापैड स्क्रीन (Landscape UI हेतु) -->
+<!-- ==================================================== -->
+<div id="screen-main-pad" class="app-screen active">
+    <div style="margin: 15px auto; max-width: 500px;">
+        <button class="midi-connect" onclick="goToSecondScreen()">🛠️ KIT LOAD (SCREEN 2)</button>
     </div>
 
     <div id="padPageNav" style="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100000!important;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;max-width:500px;margin:18px auto;padding:12px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px">
-        <button id="previousPagePads" type="button" onclick="changePage(-1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">◀ PREVIOUS</button>
-        <strong id="pageNumberPads" style="display:block!important;color:#00e5ff;font-size:18px;padding:8px">PAGE 1 / 200</strong>
-        <button id="nextPagePads" type="button" onclick="changePage(1)" style="display:block!important;visibility:visible!important;background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:bold;min-width:120px">NEXT ▶</button>
+        <button id="previousPagePads" type="button" onclick="changePage(-1)">◀ PREVIOUS</button>
+        <strong id="pageNumberPads">PAGE 1 / 200</strong>
+        <button id="nextPagePads" type="button" onclick="changePage(1)">NEXT ▶</button>
     </div>
 
     <div class="pads">
@@ -87,22 +86,22 @@ button{cursor:pointer}
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- 📺 SCREEN 2: KIT LOAD (फाइल सिलेक्शन स्क्रीन)-->
-<!-- ========================================== -->
-<div id="kitScreen" class="app-screen">
+<!-- ==================================================== -->
+<!-- 📺 SCREEN 2: KIT LOAD फ़ाइल सेटअप (Portrait UI हेतु)    -->
+<!-- ==================================================== -->
+<div id="screen-kit-setup" class="app-screen">
     <section class="sample-controls">
         <h2 style="margin:0 0 10px;font-size:22px;color:#55ff1a">HILLTOP NAGPUR</h2><h3>Ph.9175028450</h3>
         <p class="hint">हर Pad के लिए अपनी .wav फाइल चुनें। Save Kit से मोबाइल में सेव करें और Load Kit से वापस लाएँ।</p>
         <div id="sampleRows">
-            <div class="sample-row"><span>Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files)"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files)"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files)"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 4 – LOW TOM</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files)"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 5 – FLOOR TOM</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files)"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 6 – HI TOM</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files)"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files)"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
-            <div class="sample-row"><span>Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files)"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-0">Pad 1 – KICK</span><input id="wavFile0" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(0,this.files[0])"><button type="button" onclick="document.getElementById('wavFile0').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-1">Pad 2 – SNARE</span><input id="wavFile1" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(1,this.files[0])"><button type="button" onclick="document.getElementById('wavFile1').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-2">Pad 3 – RIM / SNARE</span><input id="wavFile2" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(2,this.files[0])"><button type="button" onclick="document.getElementById('wavFile2').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-3">Pad 4 – LOW TOM</span><input id="wavFile3" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(3,this.files[0])"><button type="button" onclick="document.getElementById('wavFile3').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-4">Pad 5 – FLOOR TOM</span><input id="wavFile4" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(4,this.files[0])"><button type="button" onclick="document.getElementById('wavFile4').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-5">Pad 6 – HI TOM</span><input id="wavFile5" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(5,this.files[0])"><button type="button" onclick="document.getElementById('wavFile5').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-6">Pad 7 – HIGH TOM</span><input id="wavFile6" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(6,this.files[0])"><button type="button" onclick="document.getElementById('wavFile6').click()">CHOOSE WAV</button></div>
+            <div class="sample-row"><span id="lbl-7">Pad 8 – CYMBAL</span><input id="wavFile7" type="file" accept=".wav,audio/wav,audio/x-wav" hidden onchange="chooseWav(7,this.files[0])"><button type="button" onclick="document.getElementById('wavFile7').click()">CHOOSE WAV</button></div>
         </div>
         <div class="kit-actions">
             <button class="kit-button" onclick="saveKit()">💾 SAVE KIT</button>
@@ -110,8 +109,7 @@ button{cursor:pointer}
         </div>
         <p id="sampleStatus">अभी कोई WAV sample लोड नहीं है।</p>
         
-        <!-- पहली स्क्रीन पर वापस आने का बटन -->
-        <button class="back-btn" onclick="closeSecondScreen()">◀ BACK TO DRUM</button>
+        <button class="back-btn-ui" onclick="goToMainPadScreen()">◀ BACK TO DRUM</button>
     </section>
 </div>
 
@@ -126,11 +124,19 @@ let currentPage = 1;
 const totalPages = 200;
 const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
 
-// 🎯 स्क्रीन बदलने का नया जावास्क्रिप्ट फंक्शन
-static void openSecondScreen() {
-    document.getElementById('mainScreen').classList.remove('active');
-    document.getElementById('kitScreen').classList.add('active');
+// 200 पेज के डेटा होल्डर्स (पेज वॉयस मैपिंग के लिए)
+const storedKitsNames = Array.from({ length: totalPages + 1 }, () => Array(8).fill(""));
+const storedKitsBuffers = Array.from({ length: totalPages + 1 }, () => Array(8).fill(null));
+
+// 📺 स्क्रीन नेविगेशन फंक्शंस (फिक्स किया गया सिंटैक्स)
+function goToSecondScreen() {
+    document.getElementById('screen-main-pad').classList.remove('active');
+    document.getElementById('screen-kit-setup').classList.add('active');
+    refreshSetupUI();
 }
 
-function closeSecondScreen() {
-    document.getElementById('kitScreen').classList.remove('active');
+function goToMainPadScreen() {
+    document.getElementById('screen-kit-setup').classList.remove('active');
+    document.getElementById('screen-main-pad').classList.add('active');
+}
+
