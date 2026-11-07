@@ -85,19 +85,20 @@ input[type=range]{width:95%;accent-color:#00e5ff}
  .hint{display:none}
 }
 /* KIT LOAD: compact portrait layout designed to fit without vertical scrolling. */
-#kitScreen{width:100%;max-width:480px;min-height:0;margin:0 auto;text-align:center;padding:0 6px}
-#kitScreen .back-button{width:100%;max-width:480px;margin:4px auto 7px;padding:9px 10px;font-size:13px}
-#kitScreen .sample-controls{width:100%;max-width:480px;padding:8px 10px}
+#kitScreen{width:100%;max-width:480px;height:100vh;height:100dvh;min-height:0;margin:0 auto;text-align:center;padding:0 6px;display:none;flex-direction:column;overflow:hidden}
+#kitScreen.active{display:flex}
+#kitScreen .back-button{flex:0 0 auto;width:100%;max-width:480px;margin:3px auto 5px;padding:7px 10px;font-size:12px}
+#kitScreen .sample-controls{flex:1 1 auto;min-height:0;width:100%;max-width:480px;padding:6px 10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
 #kitScreen .sample-controls h2{font-size:18px!important;margin:0 0 2px!important}
 #kitScreen .sample-controls h3{font-size:14px;margin:2px 0 4px}
 #kitScreen .hint{display:none}
-#kitScreen #sampleRows{display:grid;grid-template-columns:1fr;gap:3px}
-#kitScreen .sample-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:2px 0;min-height:34px;font-size:13px}
+#kitScreen #sampleRows{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(8,minmax(0,1fr));gap:2px;flex:1 1 auto;min-height:0}
+#kitScreen .sample-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:1px 0;min-height:0;font-size:12px}
 #kitScreen .sample-row span{width:auto;text-align:left;min-width:0}
-#kitScreen .sample-row button{width:auto;min-width:112px;padding:7px 9px;font-size:11px}
-#kitScreen .kit-actions{gap:8px;margin-top:7px}
+#kitScreen .sample-row button{width:auto;min-width:108px;padding:6px 8px;font-size:10px}
+#kitScreen .kit-actions{flex:0 0 auto;gap:8px;margin-top:5px}
 #kitScreen .kit-button{min-width:125px;padding:8px 10px;font-size:12px}
-#kitScreen #sampleStatus{font-size:11px;min-height:14px;margin:6px 0 0}
+#kitScreen #sampleStatus{flex:0 0 auto;font-size:10px;min-height:12px;margin:4px 0 0}
 @media(max-height:620px){
  #kitScreen .back-button{margin:2px auto 4px;padding:6px;font-size:12px}
  #kitScreen .sample-controls{padding:5px 8px}
@@ -164,20 +165,33 @@ input[type=range]{width:95%;accent-color:#00e5ff}
 </section>
 
 <script>
-function openKitScreen(){
+async function openKitScreen(){
   document.getElementById("padScreen").classList.remove("active");
   document.getElementById("kitScreen").classList.add("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","false");
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock("portrait").catch(() => {});
-  }
   window.scrollTo(0,0);
+  // Portrait orientation lock generally requires fullscreen on Android Chrome.
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (e) {}
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock("portrait");
+    }
+  } catch (e) {
+    // Some browsers (notably iOS Safari) do not allow web pages to lock orientation.
+  }
 }
 function closeKitScreen(){
   document.getElementById("kitScreen").classList.remove("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","true");
   document.getElementById("padScreen").classList.add("active");
-  if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
   window.scrollTo(0,0);
 }
 let audio = new (window.AudioContext || window.webkitAudioContext)();
