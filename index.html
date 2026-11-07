@@ -84,13 +84,28 @@ input[type=range]{width:95%;accent-color:#00e5ff}
  .controls{min-height:68px}
  .hint{display:none}
 }
-/* KIT LOAD screen stays in a narrow portrait layout, even when the device is landscape. */
-#kitScreen{width:100%;max-width:480px;min-height:calc(100vh - 16px);margin:0 auto;text-align:center}
-#kitScreen .sample-controls{width:100%;max-width:480px;padding:14px 12px}
-#kitScreen .sample-row{flex-direction:column;align-items:stretch;gap:8px;margin:12px 0}
-#kitScreen .sample-row span{width:100%;text-align:left}
-#kitScreen .sample-row button{width:100%;min-width:0}
-#kitScreen .back-button{width:100%;max-width:480px}
+/* KIT LOAD: compact portrait layout designed to fit without vertical scrolling. */
+#kitScreen{width:100%;max-width:480px;min-height:0;margin:0 auto;text-align:center;padding:0 6px}
+#kitScreen .back-button{width:100%;max-width:480px;margin:4px auto 7px;padding:9px 10px;font-size:13px}
+#kitScreen .sample-controls{width:100%;max-width:480px;padding:8px 10px}
+#kitScreen .sample-controls h2{font-size:18px!important;margin:0 0 2px!important}
+#kitScreen .sample-controls h3{font-size:14px;margin:2px 0 4px}
+#kitScreen .hint{display:none}
+#kitScreen #sampleRows{display:grid;grid-template-columns:1fr;gap:3px}
+#kitScreen .sample-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:2px 0;min-height:34px;font-size:13px}
+#kitScreen .sample-row span{width:auto;text-align:left;min-width:0}
+#kitScreen .sample-row button{width:auto;min-width:112px;padding:7px 9px;font-size:11px}
+#kitScreen .kit-actions{gap:8px;margin-top:7px}
+#kitScreen .kit-button{min-width:125px;padding:8px 10px;font-size:12px}
+#kitScreen #sampleStatus{font-size:11px;min-height:14px;margin:6px 0 0}
+@media(max-height:620px){
+ #kitScreen .back-button{margin:2px auto 4px;padding:6px;font-size:12px}
+ #kitScreen .sample-controls{padding:5px 8px}
+ #kitScreen .sample-row{min-height:29px;margin:1px 0}
+ #kitScreen .sample-row button{padding:5px 7px}
+ #kitScreen .kit-actions{margin-top:4px}
+ #kitScreen .kit-button{padding:6px 8px}
+}
 </style>
 </head>
 <body>
@@ -153,12 +168,16 @@ function openKitScreen(){
   document.getElementById("padScreen").classList.remove("active");
   document.getElementById("kitScreen").classList.add("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","false");
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("portrait").catch(() => {});
+  }
   window.scrollTo(0,0);
 }
 function closeKitScreen(){
   document.getElementById("kitScreen").classList.remove("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","true");
   document.getElementById("padScreen").classList.add("active");
+  if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
   window.scrollTo(0,0);
 }
 let audio = new (window.AudioContext || window.webkitAudioContext)();
