@@ -84,64 +84,29 @@ input[type=range]{width:95%;accent-color:#00e5ff}
  .controls{min-height:68px}
  .hint{display:none}
 }
-/* KIT LOAD screen stays in a narrow portrait layout, even when the device is landscape. */
-#kitScreen{width:100%;max-width:480px;min-height:calc(100vh - 16px);margin:0 auto;text-align:center}
-#kitScreen .sample-controls{width:100%;max-width:480px;padding:14px 12px}
-#kitScreen .sample-row{flex-direction:column;align-items:stretch;gap:8px;margin:12px 0}
-#kitScreen .sample-row span{width:100%;text-align:left}
-#kitScreen .sample-row button{width:100%;min-width:0}
-#kitScreen .back-button{width:100%;max-width:480px}
-
-/* FINAL RESPONSIVE FIT: keep both screens within the visible mobile viewport. */
-html,body{width:100%;height:100%;margin:0;overflow:hidden}
-body{padding:4px}
-#padScreen.active{height:calc(100vh - 8px);height:calc(100dvh - 8px);min-height:0;display:flex;flex-direction:column;overflow:hidden}
-#padScreen .top-toolbar{width:100%;flex:0 0 auto;grid-template-columns:1.05fr 1fr 1.2fr .78fr 1.65fr;gap:4px;margin:0 auto 6px;min-height:0}
-#padScreen .main-header,#padScreen .controls,#padScreen .page-nav{min-width:0;min-height:0}
-#padScreen .main-header h1{font-size:clamp(11px,1.8vw,20px)}
-#padScreen .main-header p{font-size:clamp(8px,1vw,12px)}
-#padScreen .controls{padding:3px}
-#padScreen .controls h3{font-size:clamp(8px,1vw,12px);margin:1px 0 3px}
-#padScreen .midi-connect{font-size:clamp(7px,.9vw,11px);padding:5px 3px}
-#padScreen #midiStatus{font-size:8px;min-height:9px;margin:1px}
-#padScreen .hint{display:none}
-#padScreen .kit-open-button{padding:6px 3px;font-size:clamp(9px,1vw,13px)}
-#padScreen .page-nav{padding:3px;gap:2px}
-#padScreen .page-nav button{font-size:clamp(7px,.85vw,11px);padding:6px 2px}
-#padScreen #pageNumberPads{font-size:clamp(8px,.9vw,12px);padding:1px}
-#padScreen .pads{width:100%;max-width:none;flex:1 1 auto;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:7px;margin:0 auto}
-#padScreen .pad{min-height:0;height:100%;padding:4px 2px;font-size:clamp(15px,2.2vw,27px);border-radius:18px}
-#padScreen .pad small{font-size:.78em}
-/* KIT LOAD: narrow portrait-style panel, with all eight pads visible together. */
-#kitScreen.active{display:flex;flex-direction:column;width:min(100%,480px);height:calc(100vh - 8px);height:calc(100dvh - 8px);min-height:0;margin:0 auto;overflow:hidden}
-#kitScreen .back-button{flex:0 0 auto;width:100%;margin:2px auto 5px;padding:8px;font-size:13px}
-#kitScreen .sample-controls{flex:1 1 auto;min-height:0;width:100%;max-width:480px;padding:7px 9px;overflow:hidden;display:flex;flex-direction:column}
-#kitScreen .sample-controls h2{font-size:17px!important;margin:0 0 2px!important}
-#kitScreen .sample-controls h3{font-size:12px;margin:1px 0 3px}
-#kitScreen .sample-controls>.hint{display:block;font-size:10px;line-height:1.15;margin:2px auto 5px}
-#kitScreen #sampleRows{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:5px}
-#kitScreen .sample-row{min-width:0;min-height:0;margin:0;padding:4px;background:#222b40;border:1px solid #33415c;border-radius:8px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:4px;font-size:11px}
-#kitScreen .sample-row span{width:100%;font-size:11px;text-align:center;line-height:1.1;overflow-wrap:anywhere}
-#kitScreen .sample-row button{width:100%;min-width:0;padding:6px 2px;font-size:10px;border-radius:7px}
-#kitScreen .kit-actions{flex:0 0 auto;gap:6px;margin-top:6px}
-#kitScreen .kit-button{flex:1;min-width:0;padding:8px 4px;font-size:12px}
+/* KIT LOAD: compact portrait layout designed to fit without vertical scrolling. */
+#kitScreen{width:100%;max-width:480px;height:100vh;height:100dvh;min-height:0;margin:0 auto;text-align:center;padding:0 6px;display:none;flex-direction:column;overflow:hidden}
+#kitScreen.active{display:flex}
+#kitScreen .back-button{flex:0 0 auto;width:100%;max-width:480px;margin:3px auto 5px;padding:7px 10px;font-size:12px}
+#kitScreen .sample-controls{flex:1 1 auto;min-height:0;width:100%;max-width:480px;padding:6px 10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+#kitScreen .sample-controls h2{font-size:18px!important;margin:0 0 2px!important}
+#kitScreen .sample-controls h3{font-size:14px;margin:2px 0 4px}
+#kitScreen .hint{display:none}
+#kitScreen #sampleRows{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(8,minmax(0,1fr));gap:2px;flex:1 1 auto;min-height:0}
+#kitScreen .sample-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:1px 0;min-height:0;font-size:12px}
+#kitScreen .sample-row span{width:auto;text-align:left;min-width:0}
+#kitScreen .sample-row button{width:auto;min-width:108px;padding:6px 8px;font-size:10px}
+#kitScreen .kit-actions{flex:0 0 auto;gap:8px;margin-top:5px}
+#kitScreen .kit-button{min-width:125px;padding:8px 10px;font-size:12px}
 #kitScreen #sampleStatus{flex:0 0 auto;font-size:10px;min-height:12px;margin:4px 0 0}
-@media(max-width:700px) and (orientation:portrait){
- #padScreen.active{overflow:auto}
- #padScreen .top-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}
- #padScreen .top-toolbar>.page-nav{grid-column:1/-1}
- #padScreen .pads{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(100px,1fr));overflow:auto}
- #padScreen .pad{min-height:100px}
+@media(max-height:620px){
+ #kitScreen .back-button{margin:2px auto 4px;padding:6px;font-size:12px}
+ #kitScreen .sample-controls{padding:5px 8px}
+ #kitScreen .sample-row{min-height:29px;margin:1px 0}
+ #kitScreen .sample-row button{padding:5px 7px}
+ #kitScreen .kit-actions{margin-top:4px}
+ #kitScreen .kit-button{padding:6px 8px}
 }
-@media(max-height:430px) and (orientation:landscape){
- #padScreen .top-toolbar{margin-bottom:3px}
- #padScreen .pad{border-radius:12px}
- #kitScreen .sample-controls{padding:4px 7px}
- #kitScreen .sample-controls>.hint{display:none}
- #kitScreen .sample-row{gap:2px;padding:2px}
- #kitScreen .sample-row button{padding:4px 2px}
-}
-
 </style>
 </head>
 <body>
@@ -200,16 +165,33 @@ body{padding:4px}
 </section>
 
 <script>
-function openKitScreen(){
+async function openKitScreen(){
   document.getElementById("padScreen").classList.remove("active");
   document.getElementById("kitScreen").classList.add("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","false");
   window.scrollTo(0,0);
+  // Portrait orientation lock generally requires fullscreen on Android Chrome.
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (e) {}
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock("portrait");
+    }
+  } catch (e) {
+    // Some browsers (notably iOS Safari) do not allow web pages to lock orientation.
+  }
 }
 function closeKitScreen(){
   document.getElementById("kitScreen").classList.remove("active");
   document.getElementById("kitScreen").setAttribute("aria-hidden","true");
   document.getElementById("padScreen").classList.add("active");
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
   window.scrollTo(0,0);
 }
 let audio = new (window.AudioContext || window.webkitAudioContext)();
