@@ -84,6 +84,13 @@ input[type=range]{width:95%;accent-color:#00e5ff}
  .controls{min-height:68px}
  .hint{display:none}
 }
+/* KIT LOAD screen stays in a narrow portrait layout, even when the device is landscape. */
+#kitScreen{width:100%;max-width:480px;min-height:calc(100vh - 16px);margin:0 auto;text-align:center}
+#kitScreen .sample-controls{width:100%;max-width:480px;padding:14px 12px}
+#kitScreen .sample-row{flex-direction:column;align-items:stretch;gap:8px;margin:12px 0}
+#kitScreen .sample-row span{width:100%;text-align:left}
+#kitScreen .sample-row button{width:100%;min-width:0}
+#kitScreen .back-button{width:100%;max-width:480px}
 </style>
 </head>
 <body>
