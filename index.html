@@ -13,32 +13,33 @@
 <title>MY OCTAPAD</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10121b;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:12px}
+body{margin:0;background:#10121b;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:8px}
 button{cursor:pointer}
-.screen{display:none;min-height:calc(100vh - 24px)}
+.screen{display:none;min-height:calc(100vh - 16px)}
 .screen.active{display:block}
-.main-header{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1100px;margin:0 auto 12px;padding:4px 10px}
-.main-header h1{color:#dd750f;margin:4px 0;font-size:clamp(20px,3vw,30px)}
-.main-header p{margin:4px 0;color:#c7d2e2;font-size:12px}
+.top-toolbar{display:grid;grid-template-columns:1.05fr 1.05fr 1.25fr .82fr 1.75fr;align-items:stretch;gap:5px;max-width:1400px;margin:0 auto 7px}
+.main-header{display:flex;align-items:center;justify-content:center;min-width:0;margin:0;padding:4px}
+.main-header h1{color:#dd750f;margin:3px 0;font-size:clamp(15px,2vw,23px);white-space:nowrap}
+.main-header p{margin:3px 0;color:#c7d2e2;font-size:12px;white-space:nowrap}
 .kit-open-button,.midi-connect,.back-button,.kit-button{background:#00c6d7;color:#071018;border:0;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:bold}
-.kit-open-button{min-width:130px}
-.pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;max-width:1200px;margin:14px auto}
-.pad{min-height:clamp(130px,22vh,210px);border:2px solid #00e5ff;border-radius:22px;background:#222b40;color:#fff;font-size:clamp(20px,2.4vw,30px);font-weight:bold;box-shadow:0 0 8px #00e5ff66,0 5px 15px #0008;touch-action:manipulation}
+.kit-open-button{min-width:0;width:100%;align-self:center;padding:12px 5px}
+.pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;max-width:1400px;margin:0 auto}
+.pad{min-width:0;min-height:clamp(130px,32vh,185px);border:2px solid #00e5ff;border-radius:22px;background:#222b40;color:#fff;font-size:clamp(20px,2.4vw,30px);font-weight:bold;box-shadow:0 0 8px #00e5ff66,0 5px 15px #0008;touch-action:manipulation}
 .pad small{font-size:.82em}
 .pad:active,.pad.hit{background:#00bcd4;color:#071018;transform:scale(.97);box-shadow:0 0 22px #00e5ff}
-.main-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:1100px;margin:12px auto}
-.controls{margin:8px auto;padding:10px;max-width:100%;width:100%;background:#171d2c;border:1px solid #33415c;border-radius:14px}
-.controls h3{margin:4px 0 10px}
-input[type=range]{width:90%;accent-color:#00e5ff}
-#midiStatus{font-size:13px;color:#c7d2e2;min-height:20px;margin:8px}
-.hint{font-size:12px;color:#9eacc3;max-width:700px;margin:10px auto;line-height:1.5}
-.page-nav{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px auto;padding:10px;max-width:1100px;background:#171d2c;border:2px solid #00e5ff;border-radius:14px}
-.page-nav button,#padPageNav button{background:#00c6d7;color:#071018;border:0;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:bold;min-width:105px}
-#pageNumberPads{color:#00e5ff;font-size:16px;padding:8px}
+.controls{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:0;margin:0;padding:5px;background:#171d2c;border:1px solid #33415c;border-radius:10px}
+.controls h3{font-size:clamp(10px,1.15vw,14px);margin:2px 0 5px;white-space:nowrap}
+.midi-connect{font-size:clamp(9px,1vw,12px);padding:7px 8px;border-radius:8px;white-space:nowrap}
+#midiStatus{font-size:10px;color:#c7d2e2;min-height:12px;margin:3px 0}
+.hint{font-size:9px;color:#9eacc3;max-width:100%;margin:2px auto;line-height:1.2}
+input[type=range]{width:95%;accent-color:#00e5ff}
+.page-nav{display:flex;align-items:center;justify-content:space-around;gap:4px;min-width:0;margin:0;padding:4px;background:#171d2c;border:2px solid #00e5ff;border-radius:10px}
+.page-nav button,#padPageNav button{background:#00c6d7;color:#071018;border:0;border-radius:9px;padding:9px 7px;font-size:clamp(9px,1vw,13px);font-weight:bold;min-width:0;white-space:nowrap}
+#pageNumberPads{color:#00e5ff;font-size:clamp(10px,1.1vw,14px);padding:3px;white-space:nowrap}
 #previousPagePads:disabled,#nextPagePads:disabled{opacity:.35}
-.kit-screen{max-width:960px;margin:0 auto;text-align:center}
+.kit-screen{width:100%;max-width:560px;margin:0 auto;text-align:center}
 .back-button{display:block;margin:8px auto 14px}
-.sample-controls{width:100%;max-width:960px;margin:0 auto;padding:16px 22px;border:1px solid #33415c;border-radius:16px;background:#171d2c;text-align:left}
+.sample-controls{width:100%;max-width:560px;margin:0 auto;padding:16px 18px;border:1px solid #33415c;border-radius:16px;background:#171d2c;text-align:left}
 .sample-controls h2,.sample-controls h3{text-align:center}
 .sample-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:9px 0;text-align:left;font-size:16px;min-height:42px}
 .sample-row span{flex:1;overflow-wrap:anywhere}
@@ -46,38 +47,66 @@ input[type=range]{width:90%;accent-color:#00e5ff}
 .kit-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .kit-button{min-width:175px}
 #sampleStatus{font-size:13px;color:#c7d2e2;min-height:20px;text-align:center;margin:14px 0 2px}
-@media(max-width:700px){
- body{padding:8px}
- .main-header{padding:2px;gap:8px}
- .main-header h1{font-size:19px}
- .kit-open-button{padding:10px 12px;min-width:105px;font-size:13px}
- .pads{gap:8px;margin:10px auto}
- .pad{min-height:clamp(112px,19vh,165px);border-radius:16px;font-size:18px}
- .main-controls{grid-template-columns:1fr;gap:8px}
- .controls{margin:4px auto}
+@media(orientation:landscape){
+ body{padding:6px}
+ .top-toolbar{gap:4px;margin-bottom:6px}
+ .pad{min-height:clamp(125px,32vh,180px);border-radius:20px}
+ .pads{gap:10px}
+}
+@media(max-width:700px) and (orientation:landscape){
+ .top-toolbar{grid-template-columns:1fr 1fr 1.15fr .72fr 1.5fr}
+ .main-header h1{font-size:clamp(11px,2vw,17px)}
+ .main-header p{font-size:9px}
+ .controls{padding:3px}
+ .controls h3{font-size:9px}
+ .hint{display:none}
+ .midi-connect{font-size:8px;padding:6px 3px}
+ #midiStatus{font-size:8px}
+ .page-nav button,#padPageNav button{font-size:8px;padding:7px 3px}
+ #pageNumberPads{font-size:9px}
+ .pad{min-height:clamp(95px,31vh,145px);font-size:16px;border-radius:14px}
+ .pads{gap:7px}
+}
+@media(orientation:portrait){
+ .kit-screen{max-width:560px}
  .sample-controls{padding:12px 10px}
  .sample-row{font-size:14px;gap:7px}
  .sample-row button{min-width:125px;padding:10px 8px;font-size:12px}
  .kit-button{min-width:140px}
 }
-@media(orientation:landscape) and (min-width:701px){
- .pad{min-height:clamp(135px,28vh,220px)}
+@media(max-width:700px) and (orientation:portrait){
+ .top-toolbar{grid-template-columns:1fr 1fr;gap:6px}
+ .main-header{min-height:58px}
+ .top-toolbar>.kit-open-button{min-height:48px}
+ .top-toolbar>.page-nav{grid-column:1/-1}
+ .pads{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px auto}
+ .pad{min-height:clamp(112px,19vh,165px);border-radius:16px;font-size:18px}
+ .controls{min-height:68px}
+ .hint{display:none}
 }
 </style>
 </head>
 <body>
 <div id="padScreen" class="screen active">
-<header class="main-header"><div><h1>DEEPAK BIRHA</h1><p>USB MIDI Keyboard</p></div><button class="kit-open-button" type="button" onclick="openKitScreen()">KIT LOAD</button></header>
-
-
-
-
-<div id="padPageNav" class="page-nav">
-<button id="previousPagePads" type="button" onclick="changePage(-1)" >◀ PREVIOUS</button>
-<strong id="pageNumberPads" >PAGE 1 / 200</strong>
-<button id="nextPagePads" type="button" onclick="changePage(1)" >NEXT ▶</button>
+<div class="top-toolbar">
+<header class="main-header"><div><h1>DEEPAK BIRHA</h1><p>USB MIDI Keyboard</p></div></header>
+<div class="controls">
+<h3>🔊 Volume Control</h3>
+<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
 </div>
-
+<div class="controls">
+<h3>🎹 USB MIDI Keyboard</h3>
+<button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
+<p id="midiStatus">MIDI keyboard not connected</p>
+<p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
+</div>
+<button class="kit-open-button" type="button" onclick="openKitScreen()">KIT LOAD</button>
+<div id="padPageNav" class="page-nav">
+<button id="previousPagePads" type="button" onclick="changePage(-1)">◀ PREVIOUS</button>
+<strong id="pageNumberPads">PAGE 1 / 200</strong>
+<button id="nextPagePads" type="button" onclick="changePage(1)">NEXT ▶</button>
+</div>
+</div>
 <div class="pads">
 <button class="pad" data-pad="0" onclick="play(0)">PAD 1<br><small>KICK</small></button>
 <button class="pad" data-pad="1" onclick="play(1)">PAD 2<br><small>SNARE</small></button>
@@ -87,22 +116,6 @@ input[type=range]{width:90%;accent-color:#00e5ff}
 <button class="pad" data-pad="5" onclick="play(5)">PAD 6<br><small>HI TOM</small></button>
 <button class="pad" data-pad="6" onclick="play(6)">PAD 7<br><small>HIGH TOM</small></button>
 <button class="pad" data-pad="7" onclick="play(7)">PAD 8<br><small>CYMBAL</small></button>
-</div>
-
-
-
-<div class="main-controls">
-<div class="controls">
-<h3>🎹 USB MIDI Keyboard</h3>
-<button class="midi-connect" id="midiButton" onclick="connectMIDI()">CONNECT MIDI KEYBOARD</button>
-<p id="midiStatus">MIDI keyboard not connected</p>
-<p class="hint">USB OTG adapter से MIDI keyboard जोड़ें, फिर Connect MIDI Keyboard दबाएँ और permission Allow करें।</p>
-</div>
-
-<div class="controls">
-<h3>🔊 Volume Control</h3>
-<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
-</div>
 </div>
 </div>
 <section id="kitScreen" class="screen kit-screen" aria-hidden="true">
