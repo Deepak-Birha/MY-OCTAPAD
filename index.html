@@ -406,12 +406,32 @@ function showMIDIDevices() {
 }
 
 function handleMIDIMessage(event) {
-  const [command, note, velocity] = event.data;
+  const [command, data1, data2] = event.data;
   const messageType = command & 0xf0;
-  if ((messageType === 0x90 && velocity > 0) || messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
-    const pad = noteToPad[note];
-    if (pad !== undefined && messageType === 0x90 && velocity > 0) {
-      play(pad, velocity);
+
+  // MIDI Control Change: Arduino A10 volume, D5 previous page, D7 next page
+  if (messageType === 0xb0) {
+    if (data1 === 7) {
+      volume = data2 / 127;
+      const slider = document.getElementById("volumeSlider");
+      if (slider) slider.value = Math.round(volume * 100);
+      return;
+    }
+    if (data1 === 20 && data2 > 0) {
+      changePage(-1);
+      return;
+    }
+    if (data1 === 21 && data2 > 0) {
+      changePage(1);
+      return;
+    }
+  }
+
+  // Existing MIDI drum-pad note handling remains unchanged
+  if ((messageType === 0x90 && data2 > 0) || messageType === 0x80 || (messageType === 0x90 && data2 === 0)) {
+    const pad = noteToPad[data1];
+    if (pad !== undefined && messageType === 0x90 && data2 > 0) {
+      play(pad, data2);
     }
   }
 }
