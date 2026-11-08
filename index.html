@@ -409,29 +409,39 @@ function handleMIDIMessage(event) {
   const [command, data1, data2] = event.data;
   const messageType = command & 0xf0;
 
-  // MIDI Control Change: Arduino A10 volume, D5 previous page, D7 next page
+  // MIDI Control Change: Arduino Leonardo potentiometer and page buttons
   if (messageType === 0xb0) {
-    if (data1 === 7) {
-      volume = data2 / 127;
+    const control = data1;
+    const value = data2;
+
+    // CC7: A10 volume potentiometer (0-127) controls app volume slider
+    if (control === 7) {
+      volume = value / 127;
       const slider = document.getElementById("volumeSlider");
       if (slider) slider.value = Math.round(volume * 100);
       return;
     }
-    if (data1 === 20 && data2 > 0) {
+
+    // CC20: Arduino D5 = Previous page (trigger only on press)
+    if (control === 20 && value > 0) {
       changePage(-1);
       return;
     }
-    if (data1 === 21 && data2 > 0) {
+
+    // CC21: Arduino D7 = Next page (trigger only on press)
+    if (control === 21 && value > 0) {
       changePage(1);
       return;
     }
   }
 
-  // Existing MIDI drum-pad note handling remains unchanged
-  if ((messageType === 0x90 && data2 > 0) || messageType === 0x80 || (messageType === 0x90 && data2 === 0)) {
-    const pad = noteToPad[data1];
-    if (pad !== undefined && messageType === 0x90 && data2 > 0) {
-      play(pad, data2);
+  // Existing MIDI pad note handling remains unchanged
+  const note = data1;
+  const velocity = data2;
+  if ((messageType === 0x90 && velocity > 0) || messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
+    const pad = noteToPad[note];
+    if (pad !== undefined && messageType === 0x90 && velocity > 0) {
+      play(pad, velocity);
     }
   }
 }
