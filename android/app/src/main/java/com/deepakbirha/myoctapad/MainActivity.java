@@ -75,7 +75,9 @@ public class MainActivity extends Activity {
    device=d; MidiOutputPort out=d.openOutputPort(pn); if(out==null){open(ds,i+1);return;}
    out.connect(new MidiReceiver(){@Override public void onSend(byte[] data,int offset,int count,long timestamp){
     for(int j=offset;j+2<offset+count;j+=3){int st=data[j]&255,n=data[j+1]&255,v=data[j+2]&255;
-     if((st&240)==144&&v>0){final int nn=n,vv=v;runOnUiThread(()->web.evaluateJavascript("window.onNativeMIDIEvent("+nn+","+vv+")",null));}
+     int messageType=st&240;
+     if(messageType==144&&v>0){final int nn=n,vv=v;runOnUiThread(()->web.evaluateJavascript("window.onNativeMIDIEvent("+nn+","+vv+")",null));}
+     else if(messageType==176){final int cc=n,value=v;runOnUiThread(()->web.evaluateJavascript("window.onNativeMIDIControlChange("+cc+","+value+")",null));}
     }
    }});
    status("Connected: "+info.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME));
