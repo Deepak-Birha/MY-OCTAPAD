@@ -333,6 +333,22 @@ window.onNativeMIDIEvent = function(note, velocity) {
   const pad = noteToPad[note];
   if (pad !== undefined && velocity > 0) play(pad, velocity);
 };
+
+// Arduino Control Change: CC7=Volume, CC20=PREVIOUS, CC21=NEXT
+function handleMIDIControlChange(controller, value) {
+  if (controller === 7) {
+    volume = Math.max(0, Math.min(127, value)) / 127;
+    const slider = document.getElementById("volumeSlider");
+    if (slider) slider.value = Math.round(volume * 100);
+  } else if (value > 0 && controller === 20) {
+    changePage(-1);
+  } else if (value > 0 && controller === 21) {
+    changePage(1);
+  }
+}
+window.onNativeMIDIControlChange = function(controller, value) {
+  handleMIDIControlChange(controller, value);
+};
 window.onNativeMIDIStatus = function(message) {
   document.getElementById("midiStatus").textContent = message;
 };
@@ -348,13 +364,13 @@ function showMIDIDevices() {
 }
 
 function handleMIDIMessage(event) {
-  const [command, note, velocity] = event.data;
+  const [command, data1, data2] = event.data;
   const messageType = command & 0xf0;
-  if ((messageType === 0x90 && velocity > 0) || messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
-    const pad = noteToPad[note];
-    if (pad !== undefined && messageType === 0x90 && velocity > 0) {
-      play(pad, velocity);
-    }
+  if (messageType === 0x90 && data2 > 0) {
+    const pad = noteToPad[data1];
+    if (pad !== undefined) play(pad, data2);
+  } else if (messageType === 0xb0) {
+    handleMIDIControlChange(data1, data2);
   }
 }
 
