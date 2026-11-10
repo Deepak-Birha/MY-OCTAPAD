@@ -145,8 +145,8 @@ input[type=range]{width:95%;accent-color:#00e5ff}
 <div class="top-toolbar">
 <header class="main-header"><div><h1>DEEPAK BIRHA</h1><p>USB MIDI Keyboard</p></div></header>
 <div class="controls">
-<h3>🔊 Volume Control</h3>
-<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="volume=this.value/100">
+<h3 id="padVolumeLabel">🔊 PAD 1 VOLUME</h3>
+<input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="setSelectedPadVolume(this.value)">
 </div>
 <div class="controls">
 <h3>🎹 USB MIDI Keyboard</h3>
@@ -209,7 +209,9 @@ function closeKitScreen(){
   window.scrollTo(0,0);
 }
 let audio = new (window.AudioContext || window.webkitAudioContext)();
-let volume = 0.7;
+let volume = 0.7; // Master volume, retained for Arduino MIDI CC7
+const padVolumes = Array(8).fill(0.7);
+let selectedPad = 0;
 let midiAccess = null;
 let sampleBuffers = Array(8).fill(null);
 let sampleNames = Array(8).fill("");
@@ -221,10 +223,23 @@ const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","H
 // MIDI note mapping: 36, 38, 40, 41, 43, 45, 47, 48 -> Pads 1-8
 const noteToPad = {36:0, 38:1, 40:2, 41:3, 43:4, 45:5, 47:6, 48:7};
 
+function selectPadForVolume(n) {
+  selectedPad = n;
+  const label = document.getElementById("padVolumeLabel");
+  const slider = document.getElementById("volumeSlider");
+  if (label) label.textContent = "🔊 PAD " + (n + 1) + " VOLUME";
+  if (slider) slider.value = Math.round(padVolumes[n] * 100);
+}
+
+function setSelectedPadVolume(value) {
+  padVolumes[selectedPad] = Math.max(0, Math.min(100, Number(value))) / 100;
+}
+
 function play(n, velocity=100) {
+  selectPadForVolume(n);
   if (audio.state === "suspended") audio.resume();
   const now = audio.currentTime;
-  const level = volume * Math.max(0.01, velocity / 127);
+  const level = volume * padVolumes[n] * Math.max(0.01, velocity / 127);
   if (sampleBuffers[n]) {
     const source = audio.createBufferSource();
     const sampleGain = audio.createGain();
@@ -392,8 +407,6 @@ window.onNativeMIDIEvent = function(note, velocity) {
 function handleMIDIControlChange(controller, value) {
   if (controller === 7) {
     volume = Math.max(0, Math.min(127, value)) / 127;
-    const slider = document.getElementById("volumeSlider");
-    if (slider) slider.value = Math.round(volume * 100);
   } else if (value > 0 && controller === 20) {
     changePage(-1);
   } else if (value > 0 && controller === 21) {
