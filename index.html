@@ -209,7 +209,6 @@ function closeKitScreen(){
   window.scrollTo(0,0);
 }
 let audio = new (window.AudioContext || window.webkitAudioContext)();
-let volume = 0.7; // Master volume, retained for Arduino MIDI CC7
 const padVolumes = Array(8).fill(0.7);
 let selectedPad = 0;
 let midiAccess = null;
@@ -239,7 +238,7 @@ function play(n, velocity=100) {
   selectPadForVolume(n);
   if (audio.state === "suspended") audio.resume();
   const now = audio.currentTime;
-  const level = volume * padVolumes[n] * Math.max(0.01, velocity / 127);
+  const level = padVolumes[n] * Math.max(0.01, velocity / 127);
   if (sampleBuffers[n]) {
     const source = audio.createBufferSource();
     const sampleGain = audio.createGain();
@@ -403,11 +402,10 @@ window.onNativeMIDIEvent = function(note, velocity) {
   if (pad !== undefined && velocity > 0) play(pad, velocity);
 };
 
-// Arduino Control Change: CC7=Volume, CC20=PREVIOUS, CC21=NEXT
+// Arduino Control Change: CC20=PREVIOUS, CC21=NEXT
+// CC7 master volume is intentionally unused; each pad has its own volume.
 function handleMIDIControlChange(controller, value) {
-  if (controller === 7) {
-    volume = Math.max(0, Math.min(127, value)) / 127;
-  } else if (value > 0 && controller === 20) {
+  if (value > 0 && controller === 20) {
     changePage(-1);
   } else if (value > 0 && controller === 21) {
     changePage(1);
