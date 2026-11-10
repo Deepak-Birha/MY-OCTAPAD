@@ -116,6 +116,28 @@ input[type=range]{width:95%;accent-color:#00e5ff}
  .pad small{font-size:.78em}
 }
 
+
+/* Final compact landscape fit for Screen 1 and KIT LOAD Screen 2 */
+@media (orientation:landscape) and (max-height:650px){
+ #padScreen{height:calc(100dvh - 8px);min-height:0;overflow:hidden}
+ #padScreen .top-toolbar{height:18dvh;max-height:18dvh;margin-bottom:4px}
+ #padScreen .pads{height:76dvh;grid-template-rows:repeat(2,minmax(0,1fr));gap:6px}
+ #padScreen .pad{height:100%;min-height:0;padding:2px;font-size:clamp(13px,2.5dvh,21px)}
+ #kitScreen{width:100%;max-width:none;height:calc(100dvh - 8px);min-height:0;margin:0 auto;overflow:hidden}
+ #kitScreen .back-button{margin:3px auto 6px;padding:6px 12px;font-size:clamp(11px,2dvh,15px);border-radius:9px}
+ #kitScreen .sample-controls{width:100%;max-width:none;height:calc(100dvh - 43px);padding:5px 12px;border-radius:12px;overflow:hidden}
+ #kitScreen .sample-controls h2{font-size:clamp(16px,3dvh,22px)!important;margin:0 0 2px!important}
+ #kitScreen .sample-controls h3{font-size:clamp(11px,2.1dvh,15px);margin:1px 0 3px}
+ #kitScreen .sample-controls .hint{display:none}
+ #kitScreen #sampleRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:2px}
+ #kitScreen .sample-row{min-width:0;min-height:0;margin:2px 0;gap:6px;font-size:clamp(11px,2.2dvh,15px)}
+ #kitScreen .sample-row span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #kitScreen .sample-row button{min-width:clamp(100px,14vw,145px);padding:6px 8px;font-size:clamp(10px,2dvh,14px);border-radius:8px}
+ #kitScreen .kit-actions{gap:8px;margin-top:5px}
+ #kitScreen .kit-button{min-width:130px;padding:7px 12px;font-size:clamp(11px,2dvh,14px)}
+ #kitScreen #sampleStatus{font-size:clamp(9px,1.8dvh,12px);min-height:0;margin:3px 0 0}
+}
+
 </style>
 </head>
 <body>
