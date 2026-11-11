@@ -402,10 +402,17 @@ window.onNativeMIDIEvent = function(note, velocity) {
   if (pad !== undefined && velocity > 0) play(pad, velocity);
 };
 
-// Arduino Control Change: CC20=PREVIOUS, CC21=NEXT
-// CC7 master volume is intentionally unused; each pad has its own volume.
+// Arduino Control Change: CC7=selected pad volume, CC20=PREVIOUS, CC21=NEXT
 function handleMIDIControlChange(controller, value) {
-  if (value > 0 && controller === 20) {
+  if (controller === 7) {
+    // A10 potentiometer controls only the currently selected (last played) pad.
+    const volume = Math.max(0, Math.min(127, Number(value))) / 127;
+    padVolumes[selectedPad] = volume;
+    const slider = document.getElementById("volumeSlider");
+    const label = document.getElementById("padVolumeLabel");
+    if (slider) slider.value = Math.round(volume * 100);
+    if (label) label.textContent = "🔊 PAD " + (selectedPad + 1) + " VOLUME";
+  } else if (value > 0 && controller === 20) {
     changePage(-1);
   } else if (value > 0 && controller === 21) {
     changePage(1);
