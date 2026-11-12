@@ -217,8 +217,19 @@ let sampleNames = Array(8).fill("");
 let sampleDB = null;
 let currentPage = 1;
 const totalPages = 200;
-const pageKitNames = {1:"Punjabi Dhol", 2:"Best Dholak Patch", 200:"Dhumal Sambalpuri"};
+let pageKitNames = {1:"Punjabi Dhol", 2:"Best Dholak Patch", 200:"Dhumal Sambalpuri"};
+try {
+  const savedNames = JSON.parse(localStorage.getItem("octapadKitNames") || "{}");
+  pageKitNames = {...pageKitNames, ...savedNames};
+} catch (e) {}
 function getPageKitName(page) { return pageKitNames[page] || "Page " + page; }
+function updateKitNameDisplay() {
+  const name = getPageKitName(currentPage);
+  const navName = document.getElementById("pageNumberPads");
+  const title = document.getElementById("kitPageTitle");
+  if (navName) navName.textContent = name;
+  if (title) title.textContent = name;
+}
 const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
 
 // MIDI note mapping: 36, 38, 40, 41, 43, 45, 47, 48 -> Pads 1-8
@@ -320,12 +331,22 @@ function updateSampleRows() {
 }
 
 async function saveKit() {
+  const enteredName = window.prompt("इस पेज की किट का नाम लिखें:", getPageKitName(currentPage));
+  if (enteredName === null) return;
+  const kitName = enteredName.trim();
+  if (!kitName) {
+    document.getElementById("sampleStatus").textContent = "कृपया किट का नाम लिखें।";
+    return;
+  }
   try {
     const db = sampleDB || await openSampleDB();
     const tx = db.transaction("kit","readwrite"), store = tx.objectStore("kit");
     sampleBuffers.forEach((buffer,pad) => { if (buffer) store.put({pad:(currentPage-1)*8+pad, page:currentPage, actualPad:pad, name:sampleNames[pad], wav:audioBufferToWav(buffer)}); });
     await new Promise((resolve,reject) => { tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); });
-    document.getElementById("sampleStatus").textContent = getPageKitName(currentPage) + " Drum Kit मोबाइल में सेव हो गया।";
+    pageKitNames[currentPage] = kitName;
+    localStorage.setItem("octapadKitNames", JSON.stringify(pageKitNames));
+    updateKitNameDisplay();
+    document.getElementById("sampleStatus").textContent = kitName + " Drum Kit मोबाइल में सेव हो गया।";
   } catch(e) { document.getElementById("sampleStatus").textContent = "Save नहीं हुआ। मोबाइल storage की अनुमति जाँचें।"; }
 }
 
@@ -346,8 +367,7 @@ async function changePage(direction) {
   const nextPage = currentPage + direction;
   if (nextPage < 1 || nextPage > totalPages) return;
   currentPage = nextPage;
-  document.getElementById("pageNumberPads").textContent = getPageKitName(currentPage);
-  document.getElementById("kitPageTitle").textContent = getPageKitName(currentPage);
+  updateKitNameDisplay();
   document.getElementById("previousPagePads").disabled = currentPage === 1;
   document.getElementById("nextPagePads").disabled = currentPage === totalPages;
   sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
@@ -451,8 +471,7 @@ function handleMIDIMessage(event) {
 
 updateSampleRows();
 document.getElementById("previousPagePads").disabled = true;
-document.getElementById("pageNumberPads").textContent = getPageKitName(currentPage);
-document.getElementById("kitPageTitle").textContent = getPageKitName(currentPage);
+updateKitNameDisplay();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
