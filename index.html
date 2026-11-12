@@ -230,6 +230,12 @@ function updateKitNameDisplay() {
   if (navName) navName.textContent = name;
   if (title) title.textContent = name;
 }
+
+function sendKitNameToArduino() {
+  if (window.AndroidMIDI && typeof window.AndroidMIDI.sendKitName === "function") {
+    window.AndroidMIDI.sendKitName(currentPage, getPageKitName(currentPage));
+  }
+}
 const padNames = ["KICK","SNARE","RIM / SNARE","LOW TOM","FLOOR TOM","HI TOM","HIGH TOM","CYMBAL"];
 
 // MIDI note mapping: 36, 38, 40, 41, 43, 45, 47, 48 -> Pads 1-8
@@ -346,6 +352,7 @@ async function saveKit() {
     pageKitNames[currentPage] = kitName;
     localStorage.setItem("octapadKitNames", JSON.stringify(pageKitNames));
     updateKitNameDisplay();
+    sendKitNameToArduino();
     document.getElementById("sampleStatus").textContent = kitName + " Drum Kit मोबाइल में सेव हो गया।";
   } catch(e) { document.getElementById("sampleStatus").textContent = "Save नहीं हुआ। मोबाइल storage की अनुमति जाँचें।"; }
 }
@@ -368,6 +375,7 @@ async function changePage(direction) {
   if (nextPage < 1 || nextPage > totalPages) return;
   currentPage = nextPage;
   updateKitNameDisplay();
+  sendKitNameToArduino();
   document.getElementById("previousPagePads").disabled = currentPage === 1;
   document.getElementById("nextPagePads").disabled = currentPage === totalPages;
   sampleBuffers = Array(8).fill(null); sampleNames = Array(8).fill("");
@@ -446,6 +454,9 @@ window.onNativeMIDIControlChange = function(controller, value) {
 };
 window.onNativeMIDIStatus = function(message) {
   document.getElementById("midiStatus").textContent = message;
+};
+window.onNativeMIDIConnected = function() {
+  sendKitNameToArduino();
 };
 
 function showMIDIDevices() {
