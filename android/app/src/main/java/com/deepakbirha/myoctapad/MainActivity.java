@@ -14,6 +14,7 @@ public class MainActivity extends Activity {
  private ValueCallback<Uri[]> fileCallback;
  private MidiManager manager;
  private MidiDevice device;
+ private MidiInputPort midiInputPort;
 
  @Override public void onCreate(Bundle b) {
   super.onCreate(b);
@@ -65,14 +66,22 @@ public class MainActivity extends Activity {
    if(ds.length==0){status("USB MIDI keyboard नहीं मिला। OTG जाँचें।");return;}
    open(ds,0);
   });}
+  @JavascriptInterface public void sendKitName(int page,String name){sendKitNameToDevice(page,name);}
  }
  void open(MidiDeviceInfo[] ds,int i){
-  if(i>=ds.length){status("MIDI input port नहीं मिला");return;}
-  MidiDeviceInfo info=ds[i]; int port=-1;
-  for(MidiDeviceInfo.PortInfo p:info.getPorts())if(p.getType()==MidiDeviceInfo.PortInfo.TYPE_OUTPUT){port=p.getPortNumber();break;}
-  if(port<0){open(ds,i+1);return;} final int pn=port;
+  if(i>=ds.length){status("MIDI input/output port नहीं मिला");return;}
+  MidiDeviceInfo info=ds[i]; int outputNumber=-1, inputNumber=-1;
+  for(MidiDeviceInfo.PortInfo p:info.getPorts()){
+   if(p.getType()==MidiDeviceInfo.PortInfo.TYPE_OUTPUT && outputNumber<0)outputNumber=p.getPortNumber();
+   if(p.getType()==MidiDeviceInfo.PortInfo.TYPE_INPUT && inputNumber<0)inputNumber=p.getPortNumber();
+  }
+  if(outputNumber<0){open(ds,i+1);return;}
+  final int outNo=outputNumber, inNo=inputNumber;
   manager.openDevice(info,d->{if(d==null){open(ds,i+1);return;}try{
-   device=d; MidiOutputPort out=d.openOutputPort(pn); if(out==null){open(ds,i+1);return;}
+   device=d;
+   MidiOutputPort out=d.openOutputPort(outNo);
+   if(out==null){open(ds,i+1);return;}
+   if(inNo>=0)midiInputPort=d.openInputPort(inNo);
    out.connect(new MidiReceiver(){@Override public void onSend(byte[] data,int offset,int count,long timestamp){
     for(int j=offset;j+2<offset+count;j+=3){int st=data[j]&255,n=data[j+1]&255,v=data[j+2]&255;
      int messageType=st&240;
@@ -81,7 +90,22 @@ public class MainActivity extends Activity {
     }
    }});
    status("Connected: "+info.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME));
+   runOnUiThread(()->web.evaluateJavascript("if(window.onNativeMIDIConnected)window.onNativeMIDIConnected()",null));
   }catch(Exception e){status("MIDI error: "+e.getMessage());}},null);
+ }
+ void sendKitNameToDevice(int page,String name){
+  MidiInputPort port=midiInputPort;
+  if(port==null || name==null || page<1 || page>200)return;
+  try{
+   String safe=name.replaceAll("[^\\x20-\\x7E]","?");
+   if(safe.length()>16)safe=safe.substring(0,16);
+   byte[] text=safe.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+   byte[] message=new byte[7+text.length];
+   message[0]=(byte)0xF0; message[1]=0x7D; message[2]=0x4F; message[3]=0x43;
+   message[4]=(byte)((page>>7)&0x7F); message[5]=(byte)(page&0x7F);
+   System.arraycopy(text,0,message,6,text.length); message[message.length-1]=(byte)0xF7;
+   port.send(message,0,message.length);
+  }catch(Exception e){status("Kit name send error: "+e.getMessage());}
  }
  void status(String s){runOnUiThread(()->web.evaluateJavascript("window.onNativeMIDIStatus("+org.json.JSONObject.quote(s)+")",null));}
  @Override public void onBackPressed(){if(web.canGoBack())web.goBack();else super.onBackPressed();}
